@@ -1,0 +1,125 @@
+Complete Workflow: High-Level C Program → ABY Circuit Execution
+
+================================================================================
+Step 1: Set Up Features
+================================================================================
+# Enable the necessary features for C frontend and ABY backend
+python3 driver.py -F aby c lp
+
+================================================================================
+Step 2: Install Dependencies
+================================================================================
+# This clones and builds ABY, KaHIP, and KaHyPar in sibling directories
+python3 driver.py -i
+
+================================================================================
+Step 3: Build the Project
+================================================================================
+# Build Silph/CirC compiler with all dependencies
+python3 driver.py -b
+
+================================================================================
+Step 4: Write Your C Program
+================================================================================
+Create a C file (e.g., my_biomatch.c) with annotated inputs specifying which
+party owns which data:
+
+int main(
+    __attribute__((private(0))) int db[1024],      // Party 0's private input
+    __attribute__((private(1))) int sample[4])     // Party 1's private input
+{
+    // Your computation logic here
+    // ... distance calculation, matching, etc.
+    return result;
+}
+
+Example: examples/C/mpc/benchmarks/biomatch/biomatch.c
+
+================================================================================
+Step 5: Compile C to ABY Circuit
+================================================================================
+# Run the CirC compiler to generate ABY circuit
+./target/release/examples/circ \
+    --parties 2 \
+    ./examples/C/mpc/benchmarks/biomatch/biomatch.c \
+    mpc \
+    --cost-model "empirical" \
+    --selection-scheme "smart_lp" \
+    --part-size 8000 \
+    --mut-level 2 \
+    --mut-step-size 1 \
+    --graph-type 0
+
+This generates a circuit file in ./scripts/aby_tests/tests/biomatch_c
+
+================================================================================
+Step 6: Create Test Input File
+================================================================================
+Create a test input file (e.g., my_test.txt) with the format:
+
+db <party0_database_values>
+sample <party1_sample_values>
+res <expected_result>
+
+Example: scripts/aby_tests/test_inputs/biomatch_1.txt
+
+================================================================================
+Step 7: Run the ABY MPC Protocol
+================================================================================
+Execute the two-party computation with Party 0 (server) and Party 1 (client):
+
+# Terminal 1 - Party 0 (server):
+../ABY/build/bin/aby_interpreter \
+    -m mpc \
+    -f ./scripts/aby_tests/tests/biomatch_c \
+    -t ./scripts/aby_tests/test_inputs/biomatch_1.txt \
+    -r 0
+
+# Terminal 2 - Party 1 (client):
+../ABY/build/bin/aby_interpreter \
+    -m mpc \
+    -f ./scripts/aby_tests/tests/biomatch_c \
+    -t ./scripts/aby_tests/test_inputs/biomatch_1.txt \
+    -r 1
+
+================================================================================
+Alternative: Run All Tests
+================================================================================
+# This automates steps 5-7 for all test cases
+python3 driver.py -t
+
+================================================================================
+Key Parameters Explained
+================================================================================
+--parties 2                       Two-party computation
+--cost-model "empirical"          Use empirical cost models for protocol selection
+--selection-scheme "smart_lp"     Use ILP-based smart protocol selection (Silph's main contribution)
+--part-size 8000                  Partition size for hybrid protocol generation
+--mut-level 2                     Mutation level for optimization
+--mut-step-size 1                 Mutation step size
+--graph-type 0                    Graph representation type
+-r 0 or -r 1                      Role (0=server, 1=client)
+
+================================================================================
+Other Selection Schemes Available
+================================================================================
+smart_lp       ILP-based selection (default, Silph's approach)
+smart_glp      Global LP-based selection
+smart_g_y      Greedy Yao selection
+smart_g_b      Greedy Boolean selection
+smart_g_a+y    Greedy Arithmetic+Yao selection
+smart_g_a+b    Greedy Arithmetic+Boolean selection
+css            CSS-based selection
+
+For WAN network settings, use cost-model "empirical_wan"
+
+================================================================================
+Additional Info
+================================================================================
+The workflow demonstrates Silph's key feature: automatically selecting hybrid
+MPC protocols (mixing Yao's garbled circuits, Boolean sharing, and Arithmetic
+sharing) based on cost models and ILP optimization.
+
+The compiler pipeline:
+C Frontend → Circify (IR builder) → IR (SMT-based with hash-consing) →
+Optimizer → ABY Backend (with protocol selection)
