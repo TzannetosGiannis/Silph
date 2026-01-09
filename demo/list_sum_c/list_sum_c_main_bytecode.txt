@@ -1,0 +1,20 @@
+2 1 list0_0 0 10 IN
+2 1 list0_1 0 8 IN
+2 1 list0_2 0 6 IN
+2 1 list0_3 0 4 IN
+2 1 list0_4 0 2 IN
+2 1 list1_0 1 19 IN
+2 1 list1_1 1 18 IN
+2 1 list1_2 1 17 IN
+2 1 list1_3 1 16 IN
+2 1 list1_4 1 15 IN
+2 1 8 10 11 ADD
+2 1 6 11 12 ADD
+2 1 4 12 13 ADD
+2 1 2 13 14 ADD
+2 1 19 14 20 ADD
+2 1 18 20 21 ADD
+2 1 17 21 22 ADD
+2 1 16 22 23 ADD
+2 1 15 23 24 ADD
+1 0 24 OUT
