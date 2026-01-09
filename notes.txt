@@ -1,47 +1,155 @@
-Complete Workflow: High-Level C Program → ABY Circuit Execution
+Complete Workflow: Writing C Programs → ABY Circuit → MPC Execution
 
 ================================================================================
-Step 1: Set Up Features
+Path Variables (Set these for your installation)
 ================================================================================
-# Enable the necessary features for C frontend and ABY backend
+Export these environment variables based on your installation paths:
+
+export SILPH_DIR="/path/to/Silph"              # Silph repository root
+export ABY_DIR="/path/to/ABY"                  # ABY framework (sibling dir)
+export CARGO_MANIFEST_DIR="$SILPH_DIR"         # Required for compilation
+
+Example for typical installation:
+export SILPH_DIR="$HOME/Silph"
+export ABY_DIR="$HOME/ABY"
+export CARGO_MANIFEST_DIR="$SILPH_DIR"
+
+Add these to your ~/.bashrc or ~/.zshrc to persist across sessions.
+
+================================================================================
+Step 1: Set Up Features (One-time setup)
+================================================================================
+cd $SILPH_DIR
 python3 driver.py -F aby c lp
 
-================================================================================
-Step 2: Install Dependencies
-================================================================================
-# This clones and builds ABY, KaHIP, and KaHyPar in sibling directories
-python3 driver.py -i
+This enables:
+- aby: ABY MPC framework backend
+- c: C language frontend
+- lp: Integer Linear Programming solver for optimal protocol selection
 
 ================================================================================
-Step 3: Build the Project
+Step 2: Install Dependencies (One-time setup)
 ================================================================================
-# Build Silph/CirC compiler with all dependencies
-python3 driver.py -b
+cd $SILPH_DIR
+python3 driver.py -i
+
+This clones and builds in sibling directories:
+- $ABY_DIR (ABY MPC framework)
+- $HOME/KaHIP (graph partitioning library)
+- $HOME/kahypar (hypergraph partitioning library)
+
+================================================================================
+Step 3: Build Silph Compiler (One-time, or after code changes)
+================================================================================
+cd $SILPH_DIR
+export CARGO_FEATURE_C_NO_TESTS=1
+cargo build --release --examples --features 'c lp'
+
+This creates: $SILPH_DIR/target/release/examples/circ
+
+Note: CARGO_FEATURE_C_NO_TESTS=1 skips MPFR test suite (recommended)
 
 ================================================================================
 Step 4: Write Your C Program
 ================================================================================
-Create a C file (e.g., my_biomatch.c) with annotated inputs specifying which
-party owns which data:
 
+4a. Create your C source file
+------------------------------------------------------------
+Create a new file: $SILPH_DIR/examples/C/my_program.c
+
+Template structure:
+
+```c
+// Include any standard headers you need
+#include <stdio.h>
+
+// Your program's main function with MPC annotations
 int main(
-    __attribute__((private(0))) int db[1024],      // Party 0's private input
-    __attribute__((private(1))) int sample[4])     // Party 1's private input
+    __attribute__((private(0))) int input0,     // Party 0's private input
+    __attribute__((private(1))) int input1      // Party 1's private input
+)
 {
     // Your computation logic here
-    // ... distance calculation, matching, etc.
+    int result = input0 + input1;  // Example: simple addition
     return result;
 }
+```
 
-Example: examples/C/mpc/benchmarks/biomatch/biomatch.c
+4b. MPC Annotation Rules
+------------------------------------------------------------
+- __attribute__((private(0))): Input owned by Party 0 (server)
+- __attribute__((private(1))): Input owned by Party 1 (client)
+- Supported types: int, int arrays, structs, pointers
+- Return value is revealed to both parties
+
+4c. Simple Example - Secure Addition
+------------------------------------------------------------
+File: $SILPH_DIR/examples/C/my_addition.c
+
+```c
+int main(
+    __attribute__((private(0))) int a,
+    __attribute__((private(1))) int b
+)
+{
+    return a + b;
+}
+```
+
+4d. Array Example - Secure Database Search
+------------------------------------------------------------
+File: $SILPH_DIR/examples/C/my_search.c
+
+```c
+#define DB_SIZE 10
+
+int min_distance(
+    __attribute__((private(0))) int database[DB_SIZE],
+    __attribute__((private(1))) int query
+)
+{
+    int min_dist = 999999;
+    for (int i = 0; i < DB_SIZE; i++) {
+        int dist = database[i] - query;
+        if (dist < 0) dist = -dist;  // abs value
+        if (dist < min_dist) {
+            min_dist = dist;
+        }
+    }
+    return min_dist;
+}
+
+int main(
+    __attribute__((private(0))) int database[DB_SIZE],
+    __attribute__((private(1))) int query
+)
+{
+    return min_distance(database, query);
+}
+```
+
+4e. Complex Example - See existing benchmarks
+------------------------------------------------------------
+Reference implementations:
+- $SILPH_DIR/examples/C/mpc/benchmarks/biomatch/biomatch.c
+- $SILPH_DIR/examples/C/mpc/benchmarks/kmeans/kmeans.c
+- $SILPH_DIR/examples/C/mpc/simple/*.c
 
 ================================================================================
-Step 5: Compile C to ABY Circuit
+Step 5: Compile C Program to ABY Circuit
 ================================================================================
-# Run the CirC compiler to generate ABY circuit
-./target/release/examples/circ \
+
+5a. Set required environment variable
+------------------------------------------------------------
+export CARGO_MANIFEST_DIR="$SILPH_DIR"
+
+5b. Run the compiler
+------------------------------------------------------------
+cd $SILPH_DIR
+
+$SILPH_DIR/target/release/examples/circ \
     --parties 2 \
-    ./examples/C/mpc/benchmarks/biomatch/biomatch.c \
+    $SILPH_DIR/examples/C/my_program.c \
     mpc \
     --cost-model "empirical" \
     --selection-scheme "smart_lp" \
@@ -50,76 +158,335 @@ Step 5: Compile C to ABY Circuit
     --mut-step-size 1 \
     --graph-type 0
 
-This generates a circuit file in ./scripts/aby_tests/tests/biomatch_c
+5c. Output location
+------------------------------------------------------------
+Circuit files are generated in:
+$SILPH_DIR/scripts/aby_tests/tests/<program_name>_c/
+
+For example, "my_addition.c" generates:
+$SILPH_DIR/scripts/aby_tests/tests/my_addition_c/
+    ├── my_addition_c_const.txt           # Constants
+    ├── my_addition_c_main_bytecode.txt   # Circuit bytecode
+    ├── my_addition_c_share_map.txt       # Share mappings
+    └── my_addition_c_term_share_map.txt  # Term to share mappings
+
+5d. Verify compilation success
+------------------------------------------------------------
+ls -l $SILPH_DIR/scripts/aby_tests/tests/my_addition_c/
+
+You should see 4 .txt files generated.
 
 ================================================================================
 Step 6: Create Test Input File
 ================================================================================
-Create a test input file (e.g., my_test.txt) with the format:
 
-db <party0_database_values>
-sample <party1_sample_values>
+6a. Input file format
+------------------------------------------------------------
+Create: $SILPH_DIR/scripts/aby_tests/test_inputs/my_test.txt
+
+Format:
+<variable_name> <space-separated values for party 0>
+<variable_name> <space-separated values for party 1>
 res <expected_result>
 
-Example: scripts/aby_tests/test_inputs/biomatch_1.txt
+6b. Example for simple addition (a + b = 7)
+------------------------------------------------------------
+File: $SILPH_DIR/scripts/aby_tests/test_inputs/my_addition_test.txt
+
+```
+a 3
+b 4
+res 7
+```
+
+This means:
+- Party 0 has input a=3
+- Party 1 has input b=4
+- Expected result: 3+4=7
+
+6c. Example for array inputs
+------------------------------------------------------------
+File: $SILPH_DIR/scripts/aby_tests/test_inputs/my_search_test.txt
+
+```
+database 10 20 30 40 50 60 70 80 90 100
+query 45
+res 5
+```
+
+This means:
+- Party 0 has database: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+- Party 1 has query: 45
+- Expected result: 5 (distance to closest match: 50)
+
+6d. Multiple test cases
+------------------------------------------------------------
+Create multiple input files for different test scenarios:
+- my_test_1.txt
+- my_test_2.txt
+- my_test_edge_case.txt
 
 ================================================================================
-Step 7: Run the ABY MPC Protocol
+Step 7: Run Two-Party MPC Computation
 ================================================================================
-Execute the two-party computation with Party 0 (server) and Party 1 (client):
 
-# Terminal 1 - Party 0 (server):
-../ABY/build/bin/aby_interpreter \
+7a. Setup
+------------------------------------------------------------
+You need TWO separate terminals (or two separate machines) to run the
+two-party computation.
+
+Party 0 (server) MUST start first and will wait for Party 1 to connect.
+
+7b. Terminal 1 - Start Party 0 (Server)
+------------------------------------------------------------
+cd $SILPH_DIR
+
+$ABY_DIR/build/bin/aby_interpreter \
     -m mpc \
-    -f ./scripts/aby_tests/tests/biomatch_c \
-    -t ./scripts/aby_tests/test_inputs/biomatch_1.txt \
+    -f $SILPH_DIR/scripts/aby_tests/tests/my_addition_c \
+    -t $SILPH_DIR/scripts/aby_tests/test_inputs/my_addition_test.txt \
     -r 0
 
-# Terminal 2 - Party 1 (client):
-../ABY/build/bin/aby_interpreter \
+Output will show:
+- "Waiting for connection..." (Party 0 waits for Party 1)
+- Once connected: execution time and result
+
+7c. Terminal 2 - Start Party 1 (Client)
+------------------------------------------------------------
+cd $SILPH_DIR
+
+$ABY_DIR/build/bin/aby_interpreter \
     -m mpc \
-    -f ./scripts/aby_tests/tests/biomatch_c \
-    -t ./scripts/aby_tests/test_inputs/biomatch_1.txt \
+    -f $SILPH_DIR/scripts/aby_tests/tests/my_addition_c \
+    -t $SILPH_DIR/scripts/aby_tests/test_inputs/my_addition_test.txt \
+    -r 1
+
+Output will show:
+- Connection established
+- Execution time and result
+
+7d. Expected Output
+------------------------------------------------------------
+Both terminals will display the same result (e.g., "7" for 3+4).
+
+Party 0 output example:
+```
+LOG: Server exec time: 0.543
+7
+LOG: Server load time: 0.021
+LOG: Server total time: 0.564
+```
+
+Party 1 output example:
+```
+LOG: Client exec time: 0.098
+7
+LOG: Client load time: 0.019
+LOG: Client total time: 0.117
+```
+
+7e. What just happened?
+------------------------------------------------------------
+- Party 0 provided their private input (a=3) without revealing it to Party 1
+- Party 1 provided their private input (b=4) without revealing it to Party 0
+- Both parties jointly computed the result (7) using secure MPC
+- Neither party learned the other's input - only the final result!
+
+7f. Running on separate machines
+------------------------------------------------------------
+If running on different machines:
+
+Machine 1 (Party 0):
+$ABY_DIR/build/bin/aby_interpreter \
+    -m mpc \
+    -f $SILPH_DIR/scripts/aby_tests/tests/my_addition_c \
+    -t $SILPH_DIR/scripts/aby_tests/test_inputs/my_addition_test.txt \
+    -r 0 \
+    -a 0.0.0.0 \
+    -p 7766
+
+Machine 2 (Party 1):
+$ABY_DIR/build/bin/aby_interpreter \
+    -m mpc \
+    -f $SILPH_DIR/scripts/aby_tests/tests/my_addition_c \
+    -t $SILPH_DIR/scripts/aby_tests/test_inputs/my_addition_test.txt \
+    -r 1 \
+    -a <PARTY0_IP> \
+    -p 7766
+
+Replace <PARTY0_IP> with Party 0's IP address.
+
+================================================================================
+Step 8: Verify Results Match Expected Output
+================================================================================
+Both parties should output the same result, which should match the "res" value
+in your test input file.
+
+If results don't match:
+- Check your C program logic
+- Verify input file format matches your program's parameters
+- Review compiler output for warnings
+
+================================================================================
+Quick Reference Commands
+================================================================================
+
+# Set up environment (add to ~/.bashrc)
+export SILPH_DIR="$HOME/Silph"
+export ABY_DIR="$HOME/ABY"
+export CARGO_MANIFEST_DIR="$SILPH_DIR"
+export CARGO_FEATURE_C_NO_TESTS=1
+
+# Compile C to circuit
+cd $SILPH_DIR
+$SILPH_DIR/target/release/examples/circ \
+    --parties 2 \
+    $SILPH_DIR/examples/C/YOUR_PROGRAM.c \
+    mpc \
+    --cost-model "empirical" \
+    --selection-scheme "smart_lp" \
+    --part-size 8000 \
+    --mut-level 2 \
+    --mut-step-size 1 \
+    --graph-type 0
+
+# Run Party 0 (Server) - Terminal 1
+$ABY_DIR/build/bin/aby_interpreter \
+    -m mpc \
+    -f $SILPH_DIR/scripts/aby_tests/tests/YOUR_PROGRAM_c \
+    -t $SILPH_DIR/scripts/aby_tests/test_inputs/YOUR_TEST.txt \
+    -r 0
+
+# Run Party 1 (Client) - Terminal 2
+$ABY_DIR/build/bin/aby_interpreter \
+    -m mpc \
+    -f $SILPH_DIR/scripts/aby_tests/tests/YOUR_PROGRAM_c \
+    -t $SILPH_DIR/scripts/aby_tests/test_inputs/YOUR_TEST.txt \
     -r 1
 
 ================================================================================
-Alternative: Run All Tests
+Compiler Parameters Explained
 ================================================================================
-# This automates steps 5-7 for all test cases
+--parties 2                       Two-party computation (currently fixed)
+--cost-model "empirical"          Use empirical cost models for protocol selection
+                                  (Use "empirical_wan" for WAN network settings)
+--selection-scheme "smart_lp"     Silph's ILP-based optimal protocol selection
+--part-size 8000                  Partition size for hybrid protocol generation
+--mut-level 2                     Mutation level for optimization passes
+--mut-step-size 1                 Step size for mutation operations
+--graph-type 0                    Graph representation type for partitioning
+
+Other selection schemes available:
+- smart_lp       ILP-based selection (Silph's approach, recommended)
+- smart_glp      Global LP-based selection
+- smart_g_y      Greedy Yao's garbled circuits selection
+- smart_g_b      Greedy Boolean sharing selection
+- smart_g_a+y    Greedy Arithmetic+Yao selection
+- smart_g_a+b    Greedy Arithmetic+Boolean selection
+- css            CSS-based selection
+
+ABY Interpreter Parameters:
+-m mpc                           Mode: multi-party computation
+-f <circuit_dir>                 Circuit files directory
+-t <input_file>                  Test input file
+-r <role>                        Role: 0=server, 1=client
+-a <address>                     IP address (default: 127.0.0.1)
+-p <port>                        Port number (default: 7766)
+
+================================================================================
+Troubleshooting
+================================================================================
+
+Problem: "Could not find env var CARGO_MANIFEST_DIR"
+Solution: export CARGO_MANIFEST_DIR="$SILPH_DIR"
+
+Problem: "Error: a socket could not be bound"
+Solution: Party 0 may already be running. Kill existing process:
+          pkill -f aby_interpreter
+
+Problem: "filesystem error: directory iterator cannot open directory"
+Solution: Use absolute paths instead of relative paths for aby_interpreter
+
+Problem: Compilation fails with MPFR errors
+Solution: Use export CARGO_FEATURE_C_NO_TESTS=1 before building
+
+Problem: Results don't match expected output
+Solution:
+  1. Verify input file format matches C program parameters
+  2. Check that res value in input file is correct
+  3. Review compiler warnings during circuit generation
+
+Problem: Party 1 can't connect to Party 0
+Solution:
+  1. Ensure Party 0 is started first and waiting
+  2. Check firewall settings if on different machines
+  3. Verify IP address and port are correct
+
+================================================================================
+Testing Multiple Scenarios
+================================================================================
+Create multiple test input files to validate your program:
+
+# Test case 1: Normal inputs
+$SILPH_DIR/scripts/aby_tests/test_inputs/my_program_test1.txt
+
+# Test case 2: Edge case (zeros)
+$SILPH_DIR/scripts/aby_tests/test_inputs/my_program_test2.txt
+
+# Test case 3: Maximum values
+$SILPH_DIR/scripts/aby_tests/test_inputs/my_program_test3.txt
+
+Run each test by changing the -t parameter:
+$ABY_DIR/build/bin/aby_interpreter -m mpc -f ... -t .../my_program_test1.txt -r 0
+
+================================================================================
+Automated Testing (Optional)
+================================================================================
+To run all tests automatically:
+cd $SILPH_DIR
 python3 driver.py -t
 
-================================================================================
-Key Parameters Explained
-================================================================================
---parties 2                       Two-party computation
---cost-model "empirical"          Use empirical cost models for protocol selection
---selection-scheme "smart_lp"     Use ILP-based smart protocol selection (Silph's main contribution)
---part-size 8000                  Partition size for hybrid protocol generation
---mut-level 2                     Mutation level for optimization
---mut-step-size 1                 Mutation step size
---graph-type 0                    Graph representation type
--r 0 or -r 1                      Role (0=server, 1=client)
+This will:
+1. Build all test circuits
+2. Run ABY interpreter for each test
+3. Verify results match expected outputs
+4. Report: "All tests passed ✅" or show failures
 
 ================================================================================
-Other Selection Schemes Available
+Additional Information
 ================================================================================
-smart_lp       ILP-based selection (default, Silph's approach)
-smart_glp      Global LP-based selection
-smart_g_y      Greedy Yao selection
-smart_g_b      Greedy Boolean selection
-smart_g_a+y    Greedy Arithmetic+Yao selection
-smart_g_a+b    Greedy Arithmetic+Boolean selection
-css            CSS-based selection
 
-For WAN network settings, use cost-model "empirical_wan"
+What is Silph?
+--------------
+Silph automatically selects hybrid MPC protocols by mixing:
+- Yao's garbled circuits (good for non-linear operations)
+- Boolean sharing (good for bitwise operations)
+- Arithmetic sharing (good for arithmetic operations)
 
-================================================================================
-Additional Info
-================================================================================
-The workflow demonstrates Silph's key feature: automatically selecting hybrid
-MPC protocols (mixing Yao's garbled circuits, Boolean sharing, and Arithmetic
-sharing) based on cost models and ILP optimization.
+The compiler analyzes your C program and uses ILP optimization to select
+the best protocol mix for each operation, minimizing total execution cost.
 
-The compiler pipeline:
-C Frontend → Circify (IR builder) → IR (SMT-based with hash-consing) →
-Optimizer → ABY Backend (with protocol selection)
+Compiler Pipeline:
+------------------
+C Source → Parser → Circify (IR Builder) → IR (SMT-based with hash-consing) →
+Optimizer → Protocol Selector (ILP) → ABY Circuit Generator → Bytecode
+
+Privacy Guarantees:
+-------------------
+- Party 0 never learns Party 1's inputs
+- Party 1 never learns Party 0's inputs
+- Both parties only learn the final output
+- Security holds against semi-honest adversaries
+
+Performance:
+------------
+- Server (Party 0) does more computation (generates garbled circuits)
+- Client (Party 1) is faster (evaluates circuits)
+- Typical ratio: Server 5-10x slower than client
+- Use cost-model "empirical_wan" for high-latency networks
+
+Further Reading:
+----------------
+- Paper: "Silph: Scalable and Accurate Generation of Hybrid MPC Protocols"
+- Repository: https://github.com/circify/circ (mpc_aws branch)
+- ABY Framework: https://github.com/encryptogroup/ABY
