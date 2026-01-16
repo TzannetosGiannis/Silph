@@ -16,7 +16,8 @@ benchmarks/
 ├── inner_product/ # Dot product
 ├── longest_102/   # Longest a(b*)c
 ├── max_dist_between_syms/ # Max distance between symbols
-└── minimal_points/ # Minimal points
+├── minimal_points/ # Minimal points
+└── mnist_relu/    # ReLU clamp
 ```
 
 ## How to Run a Benchmark

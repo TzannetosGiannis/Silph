@@ -463,6 +463,33 @@ def get_minimal_points_inputs() -> Tuple[List[InputArgs], int]:
     return all_args, non_vec_up_to
 
 
+def get_mnist_relu_inputs() -> Tuple[List[InputArgs], int]:
+    """Generate inputs for mnist_relu benchmark."""
+    all_args = []
+    non_vec_up_to = 0
+
+    # for config in [[16, 16], [16, 32], [16, 64], [16, 128], [16, 256], [16, 512], [16, 1024]]:
+    for config in [[16, 512], [16, 2048]]:
+        len_inner = config[0]
+        len_outer = config[1]
+        args = [
+            "--len_inner",
+            "{}".format(len_inner),
+            "--len_outer",
+            "{}".format(len_outer),
+        ]
+        input_vals = [(i % 2) for i in range(len_inner * len_outer)]
+        output_res = [0 for _ in range(len_inner * len_outer)]
+        args.append("--input")
+        args.extend(list(map(str, input_vals)))
+        args.append("--OUTPUT_res")
+        args.extend(list(map(str, output_res)))
+        label = "{}, {}".format(len_inner, len_outer)
+        all_args.append(InputArgs(label, args))
+
+    return all_args, non_vec_up_to
+
+
 def compute_count_102_result(Seq: List[int], Syms: List[int], N: int) -> int:
     """
     Compute the count_102 result.
@@ -785,6 +812,41 @@ def generate_minimal_points_test_file(N: int, output_path: str) -> None:
     print(f"Generated: {output_path} (N={N}, expected_values={len(res_values)})")
 
 
+def compute_mnist_relu_result(
+    input_vals: List[int], len_outer: int, len_inner: int
+) -> List[int]:
+    """Compute the mnist_relu output array."""
+    output = [0] * (len_outer * len_inner)
+    for i in range(len_outer):
+        for j in range(len_inner):
+            idx = i * len_inner + j
+            val = 1
+            if input_vals[idx] > val:
+                val = input_vals[idx]
+            output[idx] = val
+    return output
+
+
+def generate_mnist_relu_test_file(
+    len_outer: int, len_inner: int, output_path: str
+) -> None:
+    """Generate a test input file for mnist_relu benchmark."""
+    input_vals = [(i % 2) for i in range(len_inner * len_outer)]
+    output_res = [0 for _ in range(len_inner * len_outer)]
+
+    # Compute the correct result
+    expected = compute_mnist_relu_result(input_vals, len_outer, len_inner)
+
+    with open(output_path, "w") as f:
+        f.write("input " + " ".join(map(str, input_vals)) + "\n")
+        f.write("OUTPUT_res " + " ".join(map(str, output_res)) + "\n")
+        f.write("res " + " ".join(map(str, expected)) + "\n")
+
+    print(
+        f"Generated: {output_path} (len_inner={len_inner}, len_outer={len_outer}, expected_values={len(expected)})"
+    )
+
+
 # =============================================================================
 # Main Entry Point
 # =============================================================================
@@ -811,6 +873,7 @@ def main():
             "longest_102",
             "max_dist_between_syms",
             "minimal_points",
+            "mnist_relu",
             "all",
         ],
         help="Which benchmark to generate inputs for",
@@ -898,9 +961,17 @@ def main():
             output_path = os.path.join(args.output_dir, f"minimal_points_{n}_test.txt")
             generate_minimal_points_test_file(n, output_path)
 
+    if args.benchmark == "mnist_relu" or args.benchmark == "all":
+        # Generate mnist_relu test files
+        for len_inner, len_outer in [(16, 512), (16, 2048)]:
+            output_path = os.path.join(
+                args.output_dir, f"mnist_relu_{len_inner}x{len_outer}_test.txt"
+            )
+            generate_mnist_relu_test_file(len_outer, len_inner, output_path)
+
     print("\nTo get InputArgs programmatically:")
     print(
-        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs, get_cryptonets_max_pooling_inputs, get_db_cross_join_trivial_inputs, get_db_variance_inputs, get_inner_product_inputs, get_longest_102_inputs, get_max_dist_between_syms_inputs, get_minimal_points_inputs"
+        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs, get_cryptonets_max_pooling_inputs, get_db_cross_join_trivial_inputs, get_db_variance_inputs, get_inner_product_inputs, get_longest_102_inputs, get_max_dist_between_syms_inputs, get_minimal_points_inputs, get_mnist_relu_inputs"
     )
 
 
