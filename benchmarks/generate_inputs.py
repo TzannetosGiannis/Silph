@@ -387,6 +387,29 @@ def get_inner_product_inputs() -> Tuple[List[InputArgs], int]:
     return all_args, non_vec_up_to
 
 
+def get_longest_102_inputs() -> Tuple[List[InputArgs], int]:
+    """Generate inputs for longest_102 benchmark."""
+    all_args = []
+    non_vec_up_to = 0
+
+    # for N in [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]:
+    for N in [1024, 4096]:
+        args = [
+            "--N",
+            "{}".format(N),
+        ]
+        Seq = get_rand_ints(N, min_val=0, max_val=2)
+        Syms = [1, 0, 2]
+        args.append("--Seq")
+        args.extend(list(map(str, Seq)))
+        args.append("--Syms")
+        args.extend(list(map(str, Syms)))
+        label = "N: {}".format(N)
+        all_args.append(InputArgs(label, args))
+
+    return all_args, non_vec_up_to
+
+
 def compute_count_102_result(Seq: List[int], Syms: List[int], N: int) -> int:
     """
     Compute the count_102 result.
@@ -597,6 +620,43 @@ def generate_inner_product_test_file(N: int, output_path: str) -> None:
     print(f"Generated: {output_path} (N={N}, expected_result={res})")
 
 
+def compute_longest_102_result(Seq: List[int], Syms: List[int], N: int) -> int:
+    """Compute the longest_102 result."""
+    s0 = False
+    max_len = 0
+    length = 0
+
+    for i in range(N):
+        s1 = s0 and (Seq[i] == Syms[2])
+        s0 = (Seq[i] == Syms[1]) or (s0 and (Seq[i] == Syms[0]))
+
+        if s1 or s0:
+            length = length + 1
+        else:
+            length = 0
+
+        if s1 and max_len < length:
+            max_len = length
+
+    return max_len
+
+
+def generate_longest_102_test_file(N: int, output_path: str) -> None:
+    """Generate a test input file for the longest_102 benchmark."""
+    Seq = get_rand_ints(N, min_val=0, max_val=2)
+    Syms = [1, 0, 2]
+
+    # Compute the correct result
+    res = compute_longest_102_result(Seq, Syms, N)
+
+    with open(output_path, "w") as f:
+        f.write("Seq " + " ".join(map(str, Seq)) + "\n")
+        f.write("Syms " + " ".join(map(str, Syms)) + "\n")
+        f.write(f"res {res}\n")
+
+    print(f"Generated: {output_path} (N={N}, expected_result={res})")
+
+
 # =============================================================================
 # Main Entry Point
 # =============================================================================
@@ -620,6 +680,7 @@ def main():
             "db_join",
             "db_variance",
             "inner_product",
+            "longest_102",
             "all",
         ],
         help="Which benchmark to generate inputs for",
@@ -687,9 +748,15 @@ def main():
             output_path = os.path.join(args.output_dir, f"inner_product_{n}_test.txt")
             generate_inner_product_test_file(n, output_path)
 
+    if args.benchmark == "longest_102" or args.benchmark == "all":
+        # Generate longest_102 test files
+        for n in [1024, 4096]:
+            output_path = os.path.join(args.output_dir, f"longest_102_{n}_test.txt")
+            generate_longest_102_test_file(n, output_path)
+
     print("\nTo get InputArgs programmatically:")
     print(
-        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs, get_cryptonets_max_pooling_inputs, get_db_cross_join_trivial_inputs, get_db_variance_inputs, get_inner_product_inputs"
+        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs, get_cryptonets_max_pooling_inputs, get_db_cross_join_trivial_inputs, get_db_variance_inputs, get_inner_product_inputs, get_longest_102_inputs"
     )
 
 

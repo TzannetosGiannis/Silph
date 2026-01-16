@@ -13,7 +13,8 @@ benchmarks/
 ├── cryptonets_max_pooling/ # 2x2 max pooling
 ├── db_join/       # Cross join
 ├── db_variance/   # Variance over array
-└── inner_product/ # Dot product
+├── inner_product/ # Dot product
+└── longest_102/   # Longest a(b*)c
 ```
 
 ## How to Run a Benchmark
