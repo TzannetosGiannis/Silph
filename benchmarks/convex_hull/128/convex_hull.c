@@ -10,13 +10,14 @@
  * Parameters:
  *   N = 128
  *
- * Returns: flattened result array (result_X then result_Y)
+ * Returns: result_X and result_Y arrays
  */
 
 #define N 128
 
 typedef struct {
-    int result[2 * N];
+    int result_X[N];
+    int result_Y[N];
 } Output;
 
 Output main(
@@ -28,8 +29,8 @@ Output main(
 
     /* Initialize result arrays to 0 */
     for (int i = 0; i < N; i++) {
-        output.result[i] = 0;
-        output.result[i + N] = 0;
+        output.result_X[i] = 0;
+        output.result_Y[i] = 0;
     }
 
     /* Check each point for hull membership */
@@ -49,15 +50,15 @@ Output main(
             is_hull = is_hull & (1 - should_clear);
         }
 
-        int val_X = output.result[i];
-        int val_Y = output.result[i + N];
+        int val_X = output.result_X[i];
+        int val_Y = output.result_Y[i];
         int keep = 1 - is_hull;
 
         val_X = is_hull * p1_X + keep * val_X;
         val_Y = is_hull * p1_Y + keep * val_Y;
 
-        output.result[i] = val_X;
-        output.result[i + N] = val_Y;
+        output.result_X[i] = val_X;
+        output.result_Y[i] = val_Y;
     }
 
     return output;
