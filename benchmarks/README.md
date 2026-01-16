@@ -9,7 +9,8 @@ benchmarks/
 ├── biometric/     # Biometric matching
 ├── convex_hull/   # Convex hull
 ├── count_102/     # Regex a(b*)c count
-└── count_10s/     # Regex a(b+) count
+├── count_10s/     # Regex a(b+) count
+└── cryptonets_max_pooling/ # 2x2 max pooling
 ```
 
 ## How to Run a Benchmark

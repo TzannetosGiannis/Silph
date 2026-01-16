@@ -271,6 +271,41 @@ def get_count_10s_inputs() -> Tuple[List[InputArgs], int]:
     return all_args, non_vec_up_to
 
 
+def get_cryptonets_max_pooling_inputs() -> Tuple[List[InputArgs], int]:
+    """
+    Generate inputs for cryptonets_max_pooling benchmark.
+
+    rows/cols define the input matrix dimensions.
+    """
+    all_args = []
+    non_vec_up_to = 0
+
+    # for config in [[4, 4], [8, 8], [16, 16], [32, 32], [64, 64]]:
+    for config in [[16, 16]]:
+        rows = config[0]
+        cols = config[1]
+        rows_res = rows // 2
+        cols_res = cols // 2
+
+        args = [
+            "--cols",
+            str(cols),
+            "--rows",
+            str(rows),
+            "--cols_res",
+            str(cols_res),
+            "--rows_res",
+            str(rows_res),
+        ]
+        vals = [i + 2 for i in range(rows * cols)]
+        args.append("--vals")
+        args.extend(list(map(str, vals)))
+        label = "rows: {}, cols: {}".format(rows, cols)
+        all_args.append(InputArgs(label, args))
+
+    return all_args, non_vec_up_to
+
+
 def compute_count_102_result(Seq: List[int], Syms: List[int], N: int) -> int:
     """
     Compute the count_102 result.
@@ -341,6 +376,50 @@ def generate_count_10s_test_file(N: int, output_path: str) -> None:
     print(f"Generated: {output_path} (N={N}, expected_result={res})")
 
 
+def compute_cryptonets_max_pooling_result(
+    vals: List[int], cols: int, rows: int
+) -> List[int]:
+    """Compute max pooling output for cryptonets_max_pooling."""
+    cols_res = cols // 2
+    rows_res = rows // 2
+    output = [0] * (cols_res * rows_res)
+
+    for i in range(rows_res):
+        for j in range(cols_res):
+            idx = i * 2 * cols + j * 2
+            max_val = vals[idx]
+            candidate = vals[idx + 1]
+            if candidate > max_val:
+                max_val = candidate
+            candidate = vals[(i * 2 + 1) * cols + j * 2]
+            if candidate > max_val:
+                max_val = candidate
+            candidate = vals[(i * 2 + 1) * cols + j * 2 + 1]
+            if candidate > max_val:
+                max_val = candidate
+            output[i * cols_res + j] = max_val
+
+    return output
+
+
+def generate_cryptonets_max_pooling_test_file(
+    rows: int, cols: int, output_path: str
+) -> None:
+    """Generate a test input file for the cryptonets_max_pooling benchmark."""
+    vals = [i + 2 for i in range(rows * cols)]
+
+    # Compute the correct result
+    output = compute_cryptonets_max_pooling_result(vals, cols, rows)
+
+    with open(output_path, "w") as f:
+        f.write("vals " + " ".join(map(str, vals)) + "\n")
+        f.write("res " + " ".join(map(str, output)) + "\n")
+
+    print(
+        f"Generated: {output_path} (rows={rows}, cols={cols}, expected_values={len(output)})"
+    )
+
+
 # =============================================================================
 # Main Entry Point
 # =============================================================================
@@ -355,7 +434,14 @@ def main():
         "-b",
         type=str,
         required=True,
-        choices=["biometric", "convex_hull", "count_102", "count_10s", "all"],
+        choices=[
+            "biometric",
+            "convex_hull",
+            "count_102",
+            "count_10s",
+            "cryptonets_max_pooling",
+            "all",
+        ],
         help="Which benchmark to generate inputs for",
     )
     parser.add_argument(
@@ -395,9 +481,17 @@ def main():
             output_path = os.path.join(args.output_dir, f"count_10s_{N}_test.txt")
             generate_count_10s_test_file(N, output_path)
 
+    if args.benchmark == "cryptonets_max_pooling" or args.benchmark == "all":
+        # Generate cryptonets max pooling test files
+        for rows, cols in [(16, 16)]:
+            output_path = os.path.join(
+                args.output_dir, f"cryptonets_max_pooling_{rows}x{cols}_test.txt"
+            )
+            generate_cryptonets_max_pooling_test_file(rows, cols, output_path)
+
     print("\nTo get InputArgs programmatically:")
     print(
-        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs"
+        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs, get_cryptonets_max_pooling_inputs"
     )
 
 
