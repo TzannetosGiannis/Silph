@@ -209,6 +209,74 @@ def generate_convex_hull_test_file(N: int, output_path: str) -> None:
 
 
 # =============================================================================
+# Count 102 Benchmark
+# =============================================================================
+
+
+def get_count_102_inputs() -> Tuple[List[InputArgs], int]:
+    """
+    Generate inputs for count_102 benchmark.
+
+    N = length of Seq
+    Seq = input sequence
+    Syms = [a, b, c]
+    """
+    all_args = []
+    non_vec_up_to = 0
+
+    # for N in [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]:
+    for N in [1024, 4096]:
+        args = [
+            "--N",
+            "{}".format(N),
+        ]
+        Seq = get_rand_ints(N, min_val=0, max_val=2)
+        Syms = [1, 0, 2]
+        args.append("--Seq")
+        args.extend(list(map(str, Seq)))
+        args.append("--Syms")
+        args.extend(list(map(str, Syms)))
+        label = "N: {}".format(N)
+        all_args.append(InputArgs(label, args))
+
+    return all_args, non_vec_up_to
+
+
+def compute_count_102_result(Seq: List[int], Syms: List[int], N: int) -> int:
+    """
+    Compute the count_102 result.
+
+    Counts occurrences of regex a(b*)c in Seq.
+    """
+    s0 = False
+    c = 0
+
+    for i in range(N):
+        if s0 and (Seq[i] == Syms[2]):
+            c = c + 1
+
+        s0 = (Seq[i] == Syms[1]) or (s0 and (Seq[i] == Syms[0]))
+
+    return c
+
+
+def generate_count_102_test_file(N: int, output_path: str) -> None:
+    """Generate a test input file for the count_102 benchmark."""
+    Seq = get_rand_ints(N, min_val=0, max_val=2)
+    Syms = [1, 0, 2]
+
+    # Compute the correct result
+    res = compute_count_102_result(Seq, Syms, N)
+
+    with open(output_path, "w") as f:
+        f.write("Seq " + " ".join(map(str, Seq)) + "\n")
+        f.write("Syms " + " ".join(map(str, Syms)) + "\n")
+        f.write(f"res {res}\n")
+
+    print(f"Generated: {output_path} (N={N}, expected_result={res})")
+
+
+# =============================================================================
 # Main Entry Point
 # =============================================================================
 
@@ -222,7 +290,7 @@ def main():
         "-b",
         type=str,
         required=True,
-        choices=["biometric", "convex_hull", "all"],
+        choices=["biometric", "convex_hull", "count_102", "all"],
         help="Which benchmark to generate inputs for",
     )
     parser.add_argument(
@@ -250,8 +318,16 @@ def main():
             output_path = os.path.join(args.output_dir, f"convex_hull_{N}_test.txt")
             generate_convex_hull_test_file(N, output_path)
 
+    if args.benchmark == "count_102" or args.benchmark == "all":
+        # Generate count_102 test files
+        for N in [1024, 4096]:
+            output_path = os.path.join(args.output_dir, f"count_102_{N}_test.txt")
+            generate_count_102_test_file(N, output_path)
+
     print("\nTo get InputArgs programmatically:")
-    print("  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs")
+    print(
+        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs"
+    )
 
 
 if __name__ == "__main__":
