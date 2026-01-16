@@ -1,13 +1,3 @@
-# Biometric Matching Test Input
-# Database db (Party 0): 4 entries x 4 features = 16 values
-# Query sample (Party 1): 4 features
-#
-# Expected: Entry 0 is closest with distance 55
-#   Entry 0: [4,5,2,10]   -> dist = (4-1)² + (5-2)² + (2-3)² + (10-4)² = 9+9+1+36 = 55
-#   Entry 1: [2,120,4,10] -> dist = 13962
-#   Entry 2: [99,88,77,66] -> dist = 26320
-#   Entry 3: [55,44,33,22] -> dist = 5904
-#
 db 4 5 2 10 2 120 4 10 99 88 77 66 55 44 33 22
 sample 1 2 3 4
 res 55
