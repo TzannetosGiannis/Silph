@@ -364,6 +364,29 @@ def get_db_variance_inputs() -> Tuple[List[InputArgs], int]:
     return all_args, non_vec_up_to
 
 
+def get_inner_product_inputs() -> Tuple[List[InputArgs], int]:
+    """Generate inputs for inner_product benchmark."""
+    all_args = []
+    non_vec_up_to = 0
+
+    # for N in [4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]:
+    for N in [512, 4096]:
+        args = [
+            "--N",
+            "{}".format(N),
+        ]
+        A = get_rand_ints(N)
+        B = get_rand_ints(N)
+        args.append("--A")
+        args.extend(list(map(str, A)))
+        args.append("--B")
+        args.extend(list(map(str, B)))
+        label = "N: {}".format(N)
+        all_args.append(InputArgs(label, args))
+
+    return all_args, non_vec_up_to
+
+
 def compute_count_102_result(Seq: List[int], Syms: List[int], N: int) -> int:
     """
     Compute the count_102 result.
@@ -550,6 +573,30 @@ def generate_db_variance_test_file(N: int, output_path: str) -> None:
     print(f"Generated: {output_path} (len={N}, expected_result={res})")
 
 
+def compute_inner_product_result(A: List[int], B: List[int], N: int) -> int:
+    """Compute the inner product for the benchmark."""
+    total = 0
+    for i in range(N):
+        total += A[i] * B[i]
+    return total
+
+
+def generate_inner_product_test_file(N: int, output_path: str) -> None:
+    """Generate a test input file for the inner_product benchmark."""
+    A = get_rand_ints(N)
+    B = get_rand_ints(N)
+
+    # Compute the correct result
+    res = compute_inner_product_result(A, B, N)
+
+    with open(output_path, "w") as f:
+        f.write("A " + " ".join(map(str, A)) + "\n")
+        f.write("B " + " ".join(map(str, B)) + "\n")
+        f.write(f"res {res}\n")
+
+    print(f"Generated: {output_path} (N={N}, expected_result={res})")
+
+
 # =============================================================================
 # Main Entry Point
 # =============================================================================
@@ -572,6 +619,7 @@ def main():
             "cryptonets_max_pooling",
             "db_join",
             "db_variance",
+            "inner_product",
             "all",
         ],
         help="Which benchmark to generate inputs for",
@@ -633,9 +681,15 @@ def main():
             output_path = os.path.join(args.output_dir, f"db_variance_{n}_test.txt")
             generate_db_variance_test_file(n, output_path)
 
+    if args.benchmark == "inner_product" or args.benchmark == "all":
+        # Generate inner product test files
+        for n in [512, 4096]:
+            output_path = os.path.join(args.output_dir, f"inner_product_{n}_test.txt")
+            generate_inner_product_test_file(n, output_path)
+
     print("\nTo get InputArgs programmatically:")
     print(
-        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs, get_cryptonets_max_pooling_inputs, get_db_cross_join_trivial_inputs, get_db_variance_inputs"
+        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs, get_cryptonets_max_pooling_inputs, get_db_cross_join_trivial_inputs, get_db_variance_inputs, get_inner_product_inputs"
     )
 
 
