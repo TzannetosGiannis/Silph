@@ -17,6 +17,10 @@
 #define N 1024
 #define K 4
 
+typedef struct {
+    int result[2];
+} Output;
+
 /* Compute squared Euclidean distance between two K-dimensional vectors */
 int match_fix(int x1, int x2, int x3, int x4, int y1, int y2, int y3, int y4) {
     int t1 = (x1 - y1);
@@ -27,14 +31,14 @@ int match_fix(int x1, int x2, int x3, int x4, int y1, int y2, int y3, int y4) {
     return r;
 }
 
-int main(
+Output main(
     __attribute__((private(0))) int db[N * K],   /* Database: N entries x K features */
-    __attribute__((private(1))) int sample[K],   /* Query: K features to match */
-    __attribute__((public)) int result[2]        /* Output: min_sum, min_index */
+    __attribute__((private(1))) int sample[K]   /* Query: K features to match */
 )
 {
     int min_sum = 0;
     int min_index = 0;
+    Output output;
 
     for (int i = 0; i < N; i++) {
         int distance = 0;
@@ -49,7 +53,7 @@ int main(
         }
     }
 
-    result[0] = min_sum;
-    result[1] = min_index;
-    return result[0];
+    output.result[0] = min_sum;
+    output.result[1] = min_index;
+    return output;
 }

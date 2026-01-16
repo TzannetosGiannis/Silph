@@ -64,13 +64,10 @@ def get_biometric_inputs() -> Tuple[List[InputArgs], int]:
         ]
         C = get_rand_ints(D)
         S = get_rand_ints(D * N)
-        result = [0, 0]
         args.append("--C")
         args.extend(list(map(str, C)))
         args.append("--S")
         args.extend(list(map(str, S)))
-        args.append("--result")
-        args.extend(list(map(str, result)))
         label = "D: {}, N: {}".format(D, N)
         all_args.append(InputArgs(label, args))
 
@@ -113,7 +110,6 @@ def generate_biometric_test_file(D: int, N: int, output_path: str) -> None:
     with open(output_path, "w") as f:
         f.write("db " + " ".join(map(str, S)) + "\n")
         f.write("sample " + " ".join(map(str, C)) + "\n")
-        f.write("result 0 0\n")
         f.write(f"res {min_sum} {min_index}\n")
 
     print(
