@@ -14,7 +14,8 @@ benchmarks/
 ├── db_join/       # Cross join
 ├── db_variance/   # Variance over array
 ├── inner_product/ # Dot product
-└── longest_102/   # Longest a(b*)c
+├── longest_102/   # Longest a(b*)c
+└── max_dist_between_syms/ # Max distance between symbols
 ```
 
 ## How to Run a Benchmark

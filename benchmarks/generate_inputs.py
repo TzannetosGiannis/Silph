@@ -410,6 +410,30 @@ def get_longest_102_inputs() -> Tuple[List[InputArgs], int]:
     return all_args, non_vec_up_to
 
 
+def get_max_dist_between_syms_inputs() -> Tuple[List[InputArgs], int]:
+    """Generate inputs for max_dist_between_syms benchmark."""
+    all_args = []
+    non_vec_up_to = 0
+
+    # for N in [8, 16, 32, 64, 128, 256, 512, 1024, 4096]:
+    for N in [1024, 2048]:
+        args = [
+            "--N",
+            "{}".format(N),
+        ]
+        Seq = get_rand_ints(N)
+        some_i = random.randint(0, len(Seq) - 1)
+        Sym = Seq[some_i]
+        args.append("--Seq")
+        args.extend(list(map(str, Seq)))
+        args.append("--Sym")
+        args.append(str(Sym))
+        label = "N: {}".format(N)
+        all_args.append(InputArgs(label, args))
+
+    return all_args, non_vec_up_to
+
+
 def compute_count_102_result(Seq: List[int], Syms: List[int], N: int) -> int:
     """
     Compute the count_102 result.
@@ -657,6 +681,37 @@ def generate_longest_102_test_file(N: int, output_path: str) -> None:
     print(f"Generated: {output_path} (N={N}, expected_result={res})")
 
 
+def compute_max_dist_between_syms_result(Seq: List[int], Sym: int, N: int) -> int:
+    """Compute the max distance between symbol occurrences."""
+    max_dist = 0
+    current_dist = 0
+    for i in range(N):
+        if Seq[i] != Sym:
+            current_dist += 1
+        else:
+            current_dist = 0
+        if current_dist > max_dist:
+            max_dist = current_dist
+    return max_dist
+
+
+def generate_max_dist_between_syms_test_file(N: int, output_path: str) -> None:
+    """Generate a test input file for max_dist_between_syms benchmark."""
+    Seq = get_rand_ints(N)
+    some_i = random.randint(0, len(Seq) - 1)
+    Sym = Seq[some_i]
+
+    # Compute the correct result
+    res = compute_max_dist_between_syms_result(Seq, Sym, N)
+
+    with open(output_path, "w") as f:
+        f.write("Seq " + " ".join(map(str, Seq)) + "\n")
+        f.write(f"Sym {Sym}\n")
+        f.write(f"res {res}\n")
+
+    print(f"Generated: {output_path} (N={N}, expected_result={res})")
+
+
 # =============================================================================
 # Main Entry Point
 # =============================================================================
@@ -681,6 +736,7 @@ def main():
             "db_variance",
             "inner_product",
             "longest_102",
+            "max_dist_between_syms",
             "all",
         ],
         help="Which benchmark to generate inputs for",
@@ -754,9 +810,17 @@ def main():
             output_path = os.path.join(args.output_dir, f"longest_102_{n}_test.txt")
             generate_longest_102_test_file(n, output_path)
 
+    if args.benchmark == "max_dist_between_syms" or args.benchmark == "all":
+        # Generate max_dist_between_syms test files
+        for n in [1024, 2048]:
+            output_path = os.path.join(
+                args.output_dir, f"max_dist_between_syms_{n}_test.txt"
+            )
+            generate_max_dist_between_syms_test_file(n, output_path)
+
     print("\nTo get InputArgs programmatically:")
     print(
-        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs, get_cryptonets_max_pooling_inputs, get_db_cross_join_trivial_inputs, get_db_variance_inputs, get_inner_product_inputs, get_longest_102_inputs"
+        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs, get_cryptonets_max_pooling_inputs, get_db_cross_join_trivial_inputs, get_db_variance_inputs, get_inner_product_inputs, get_longest_102_inputs, get_max_dist_between_syms_inputs"
     )
 
 
