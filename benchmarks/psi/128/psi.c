@@ -25,7 +25,7 @@ Output main(
         }
         
         int val = output.result[i];
-        if (flag) {
+        if (flag != 0) {
             val = A[i];
         }
         output.result[i] = val;
