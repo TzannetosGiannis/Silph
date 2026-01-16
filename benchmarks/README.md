@@ -11,7 +11,8 @@ benchmarks/
 ├── count_102/     # Regex a(b*)c count
 ├── count_10s/     # Regex a(b+) count
 ├── cryptonets_max_pooling/ # 2x2 max pooling
-└── db_join/       # Cross join
+├── db_join/       # Cross join
+└── db_variance/   # Variance over array
 ```
 
 ## How to Run a Benchmark

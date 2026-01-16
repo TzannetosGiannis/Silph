@@ -337,6 +337,33 @@ def get_db_cross_join_trivial_inputs() -> Tuple[List[InputArgs], int]:
     return all_args, non_vec_up_to
 
 
+def get_db_variance_inputs() -> Tuple[List[InputArgs], int]:
+    """
+    Generate inputs for db_variance benchmark.
+
+    A and V are length-N arrays.
+    """
+    all_args = []
+    non_vec_up_to = 0
+
+    # for N in [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]:
+    for N in [512, 1024, 2048, 4096]:
+        args = [
+            "--len",
+            "{}".format(N),
+        ]
+        A = get_rand_ints(N)
+        V = [0 for _ in range(N)]
+        args.append("--A")
+        args.extend(list(map(str, A)))
+        args.append("--V")
+        args.extend(list(map(str, V)))
+        label = "len: {}".format(N)
+        all_args.append(InputArgs(label, args))
+
+    return all_args, non_vec_up_to
+
+
 def compute_count_102_result(Seq: List[int], Syms: List[int], N: int) -> int:
     """
     Compute the count_102 result.
@@ -492,6 +519,37 @@ def generate_db_cross_join_trivial_test_file(
     )
 
 
+def compute_db_variance_result(A: List[int], N: int) -> int:
+    """Compute variance for db_variance benchmark."""
+    total = 0
+    for value in A:
+        total += value
+    exp = total // N
+
+    res = 0
+    for value in A:
+        dist = value - exp
+        res += dist * dist
+
+    return res // N
+
+
+def generate_db_variance_test_file(N: int, output_path: str) -> None:
+    """Generate a test input file for the db_variance benchmark."""
+    A = get_rand_ints(N)
+    V = [0 for _ in range(N)]
+
+    # Compute the correct result
+    res = compute_db_variance_result(A, N)
+
+    with open(output_path, "w") as f:
+        f.write("A " + " ".join(map(str, A)) + "\n")
+        f.write("V " + " ".join(map(str, V)) + "\n")
+        f.write(f"res {res}\n")
+
+    print(f"Generated: {output_path} (len={N}, expected_result={res})")
+
+
 # =============================================================================
 # Main Entry Point
 # =============================================================================
@@ -513,6 +571,7 @@ def main():
             "count_10s",
             "cryptonets_max_pooling",
             "db_join",
+            "db_variance",
             "all",
         ],
         help="Which benchmark to generate inputs for",
@@ -568,9 +627,15 @@ def main():
             output_path = os.path.join(args.output_dir, f"db_join_{n}_test.txt")
             generate_db_cross_join_trivial_test_file(n, n, output_path)
 
+    if args.benchmark == "db_variance" or args.benchmark == "all":
+        # Generate db variance test files
+        for n in [512, 1024, 2048, 4096]:
+            output_path = os.path.join(args.output_dir, f"db_variance_{n}_test.txt")
+            generate_db_variance_test_file(n, output_path)
+
     print("\nTo get InputArgs programmatically:")
     print(
-        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs, get_cryptonets_max_pooling_inputs, get_db_cross_join_trivial_inputs"
+        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs, get_cryptonets_max_pooling_inputs, get_db_cross_join_trivial_inputs, get_db_variance_inputs"
     )
 
 
