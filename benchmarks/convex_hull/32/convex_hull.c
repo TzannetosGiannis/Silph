@@ -38,16 +38,47 @@ Output main(
         int is_hull = 1;
         int p1_X = X_coords[i];
         int p1_Y = Y_coords[i];
-        int in_quadrant = (p1_X <= 0) & (p1_Y >= 0);
+        int in_quadrant = 0;
 
-        for (int j = 0; j < N; j++) {
-            int p2_X = X_coords[j];
-            int p2_Y = Y_coords[j];
+        int cond1;
+        if (p1_X <= 0) {
+            cond1 = 1;
+        } else {
+            cond1 = 0;
+        }
+        int cond2;
+        if (p1_Y >= 0) {
+            cond2 = 1;
+        } else {
+            cond2 = 0;
+        }
+        if (cond1 + cond2 == 2) {
+            in_quadrant = 1;
+        } else {
+            in_quadrant = 0;
+        }
 
-            /* Check if point i is dominated by point j */
-            int dominate = (p1_X > p2_X) & (p1_Y < p2_Y);
-            int should_clear = in_quadrant & dominate;
-            is_hull = is_hull & (1 - should_clear);
+        if (in_quadrant == 1) {
+            for (int j = 0; j < N; j++) {
+                int p2_X = X_coords[j];
+                int p2_Y = Y_coords[j];
+
+                int cond3;
+                if (p1_X > p2_X) {
+                    cond3 = 1;
+                } else {
+                    cond3 = 0;
+                }
+                int cond4;
+                if (p1_Y < p2_Y) {
+                    cond4 = 1;
+                } else {
+                    cond4 = 0;
+                }
+                if (cond3 + cond4 == 2) {
+                    is_hull = 0;
+                }
+            }
         }
 
         int val_X = output.result_X[i];
