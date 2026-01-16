@@ -242,6 +242,35 @@ def get_count_102_inputs() -> Tuple[List[InputArgs], int]:
     return all_args, non_vec_up_to
 
 
+def get_count_10s_inputs() -> Tuple[List[InputArgs], int]:
+    """
+    Generate inputs for count_10s benchmark.
+
+    N = length of Seq
+    Seq = input sequence
+    Syms = [a, b]
+    """
+    all_args = []
+    non_vec_up_to = 0
+
+    # for N in [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]:
+    for N in [1024, 4096]:
+        args = [
+            "--N",
+            "{}".format(N),
+        ]
+        Seq = get_rand_ints(N, min_val=0, max_val=2)
+        Syms = [0, 1]
+        args.append("--Seq")
+        args.extend(list(map(str, Seq)))
+        args.append("--Syms")
+        args.extend(list(map(str, Syms)))
+        label = "N: {}".format(N)
+        all_args.append(InputArgs(label, args))
+
+    return all_args, non_vec_up_to
+
+
 def compute_count_102_result(Seq: List[int], Syms: List[int], N: int) -> int:
     """
     Compute the count_102 result.
@@ -276,6 +305,42 @@ def generate_count_102_test_file(N: int, output_path: str) -> None:
     print(f"Generated: {output_path} (N={N}, expected_result={res})")
 
 
+def compute_count_10s_result(Seq: List[int], Syms: List[int], N: int) -> int:
+    """
+    Compute the count_10s result.
+
+    Counts occurrences of regex a(b+) in Seq.
+    """
+    s0 = False
+    s1 = False
+    scount = 0
+
+    for i in range(N):
+        if s1 and (Seq[i] != Syms[0]):
+            scount = scount + 1
+
+        s1 = (Seq[i] == Syms[0]) and (s0 or s1)
+        s0 = Seq[i] == Syms[1]
+
+    return scount
+
+
+def generate_count_10s_test_file(N: int, output_path: str) -> None:
+    """Generate a test input file for the count_10s benchmark."""
+    Seq = get_rand_ints(N, min_val=0, max_val=2)
+    Syms = [0, 1]
+
+    # Compute the correct result
+    res = compute_count_10s_result(Seq, Syms, N)
+
+    with open(output_path, "w") as f:
+        f.write("Seq " + " ".join(map(str, Seq)) + "\n")
+        f.write("Syms " + " ".join(map(str, Syms)) + "\n")
+        f.write(f"res {res}\n")
+
+    print(f"Generated: {output_path} (N={N}, expected_result={res})")
+
+
 # =============================================================================
 # Main Entry Point
 # =============================================================================
@@ -290,7 +355,7 @@ def main():
         "-b",
         type=str,
         required=True,
-        choices=["biometric", "convex_hull", "count_102", "all"],
+        choices=["biometric", "convex_hull", "count_102", "count_10s", "all"],
         help="Which benchmark to generate inputs for",
     )
     parser.add_argument(
@@ -324,9 +389,15 @@ def main():
             output_path = os.path.join(args.output_dir, f"count_102_{N}_test.txt")
             generate_count_102_test_file(N, output_path)
 
+    if args.benchmark == "count_10s" or args.benchmark == "all":
+        # Generate count_10s test files
+        for N in [1024, 4096]:
+            output_path = os.path.join(args.output_dir, f"count_10s_{N}_test.txt")
+            generate_count_10s_test_file(N, output_path)
+
     print("\nTo get InputArgs programmatically:")
     print(
-        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs"
+        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs"
     )
 
 

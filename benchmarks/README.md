@@ -8,7 +8,8 @@ This directory contains MPC benchmark implementations for the Silph compiler.
 benchmarks/
 ├── biometric/     # Biometric matching
 ├── convex_hull/   # Convex hull
-└── count_102/     # Regex a(b*)c count
+├── count_102/     # Regex a(b*)c count
+└── count_10s/     # Regex a(b+) count
 ```
 
 ## How to Run a Benchmark
