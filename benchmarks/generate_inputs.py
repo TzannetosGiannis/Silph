@@ -848,6 +848,82 @@ def generate_mnist_relu_test_file(
 
 
 # =============================================================================
+# PSI Benchmark
+# =============================================================================
+
+
+def get_psi_inputs() -> Tuple[List[InputArgs], int]:
+    """
+    Generate inputs for PSI benchmark.
+
+    A = Set A (Party 0)
+    B = Set B (Party 1)
+    result = output array (size of A)
+    """
+    all_args = []
+    non_vec_up_to = 0
+    # for config in [[16, 16], [32, 32], [64, 64], [128, 128], [256, 256], [512, 512], [1024, 1024]]:
+    for config in [[128, 128], [1024, 1024]]:
+        SA = config[0]
+        SB = config[1]
+        args = [
+            "--D",
+            "{}".format(SA),
+            "--R",
+            "{}".format(SB),
+        ]
+        A = get_rand_ints(SA)
+        B = get_rand_ints(SB)
+        result = [0 for i in range(SA)]
+        args.append("--A")
+        args.extend(list(map(str, A)))
+        args.append("--B")
+        args.extend(list(map(str, B)))
+        args.append("--result")
+        args.extend(list(map(str, result)))
+        label = "SA: {}, SB: {}".format(SA, SB)
+        all_args.append(InputArgs(label, args))
+    return (all_args, non_vec_up_to)
+
+
+def compute_psi_result(A: List[int], B: List[int], SA: int, SB: int) -> List[int]:
+    """
+    Compute the PSI result.
+
+    Naive O(N*M) intersection as per the benchmark spec.
+    """
+    result = [0] * SA
+    for i in range(SA):
+        flag = False
+        for j in range(SB):
+            if A[i] == B[j]:
+                flag = True
+
+        val = result[i]
+        if flag:
+            val = A[i]
+        result[i] = val
+
+    return result
+
+
+def generate_psi_test_file(SA: int, SB: int, output_path: str) -> None:
+    """Generate a test input file for the PSI benchmark."""
+    A = get_rand_ints(SA)
+    B = get_rand_ints(SB)
+
+    # Compute the correct result
+    res = compute_psi_result(A, B, SA, SB)
+
+    with open(output_path, "w") as f:
+        f.write("A " + " ".join(map(str, A)) + "\n")
+        f.write("B " + " ".join(map(str, B)) + "\n")
+        f.write("result " + " ".join(map(str, res)) + "\n")
+
+    print(f"Generated: {output_path} (SA={SA}, SB={SB}, expected_values={len(res)})")
+
+
+# =============================================================================
 # Main Entry Point
 # =============================================================================
 
@@ -874,6 +950,7 @@ def main():
             "max_dist_between_syms",
             "minimal_points",
             "mnist_relu",
+            "psi",
             "all",
         ],
         help="Which benchmark to generate inputs for",
@@ -969,9 +1046,16 @@ def main():
             )
             generate_mnist_relu_test_file(len_outer, len_inner, output_path)
 
+    if args.benchmark == "psi" or args.benchmark == "all":
+        # Generate psi test files
+        configs = [[128, 128], [1024, 1024]]
+        for SA, SB in configs:
+            output_path = os.path.join(args.output_dir, f"psi_{SA}_test.txt")
+            generate_psi_test_file(SA, SB, output_path)
+
     print("\nTo get InputArgs programmatically:")
     print(
-        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs, get_cryptonets_max_pooling_inputs, get_db_cross_join_trivial_inputs, get_db_variance_inputs, get_inner_product_inputs, get_longest_102_inputs, get_max_dist_between_syms_inputs, get_minimal_points_inputs, get_mnist_relu_inputs"
+        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs, get_cryptonets_max_pooling_inputs, get_db_cross_join_trivial_inputs, get_db_variance_inputs, get_inner_product_inputs, get_longest_102_inputs, get_max_dist_between_syms_inputs, get_minimal_points_inputs, get_mnist_relu_inputs, get_psi_inputs"
     )
 
 
