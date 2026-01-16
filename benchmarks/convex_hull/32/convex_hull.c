@@ -44,7 +44,7 @@ Output main(
                 int p2_Y = Y_coords[j];
 
                 /* Check if point i is dominated by point j */
-                if (!(p1_X <= p2_X || p1_Y >= p2_Y)) {
+                if (p1_X > p2_X && p1_Y < p2_Y) {
                     is_hull = 0;
                 }
             }
