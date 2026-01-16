@@ -15,7 +15,8 @@ benchmarks/
 ├── db_variance/   # Variance over array
 ├── inner_product/ # Dot product
 ├── longest_102/   # Longest a(b*)c
-└── max_dist_between_syms/ # Max distance between symbols
+├── max_dist_between_syms/ # Max distance between symbols
+└── minimal_points/ # Minimal points
 ```
 
 ## How to Run a Benchmark

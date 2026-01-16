@@ -434,6 +434,35 @@ def get_max_dist_between_syms_inputs() -> Tuple[List[InputArgs], int]:
     return all_args, non_vec_up_to
 
 
+def get_minimal_points_inputs() -> Tuple[List[InputArgs], int]:
+    """Generate inputs for minimal_points benchmark."""
+    all_args = []
+    non_vec_up_to = 0
+
+    # for N in [4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]:
+    for N in [32, 64, 128, 256]:
+        args = [
+            "--N",
+            "{}".format(N),
+        ]
+        X_coords = get_rand_ints(N)
+        Y_coords = get_rand_ints(N)
+        result_X = [0] * N
+        result_Y = [0] * N
+        args.append("--X_coords")
+        args.extend(list(map(str, X_coords)))
+        args.append("--Y_coords")
+        args.extend(list(map(str, Y_coords)))
+        args.append("--result_X")
+        args.extend(list(map(str, result_X)))
+        args.append("--result_Y")
+        args.extend(list(map(str, result_Y)))
+        label = "N: {}".format(N)
+        all_args.append(InputArgs(label, args))
+
+    return all_args, non_vec_up_to
+
+
 def compute_count_102_result(Seq: List[int], Syms: List[int], N: int) -> int:
     """
     Compute the count_102 result.
@@ -712,6 +741,50 @@ def generate_max_dist_between_syms_test_file(N: int, output_path: str) -> None:
     print(f"Generated: {output_path} (N={N}, expected_result={res})")
 
 
+def compute_minimal_points_result(
+    X_coords: List[int], Y_coords: List[int], N: int
+) -> Tuple[List[int], List[int]]:
+    """Compute minimal points output arrays."""
+    result_X = [0] * N
+    result_Y = [0] * N
+
+    for i in range(N):
+        bx = False
+        for j in range(N):
+            if X_coords[j] < X_coords[i] and Y_coords[j] < Y_coords[i]:
+                bx = True
+        val_X = result_X[i]
+        val_Y = result_Y[i]
+        if not bx:
+            val_X = X_coords[i]
+            val_Y = Y_coords[i]
+        result_X[i] = val_X
+        result_Y[i] = val_Y
+
+    return result_X, result_Y
+
+
+def generate_minimal_points_test_file(N: int, output_path: str) -> None:
+    """Generate a test input file for minimal_points benchmark."""
+    X_coords = get_rand_ints(N)
+    Y_coords = get_rand_ints(N)
+    result_X = [0] * N
+    result_Y = [0] * N
+
+    # Compute the correct result
+    expected_X, expected_Y = compute_minimal_points_result(X_coords, Y_coords, N)
+    res_values = expected_X + expected_Y
+
+    with open(output_path, "w") as f:
+        f.write("X_coords " + " ".join(map(str, X_coords)) + "\n")
+        f.write("Y_coords " + " ".join(map(str, Y_coords)) + "\n")
+        f.write("result_X " + " ".join(map(str, result_X)) + "\n")
+        f.write("result_Y " + " ".join(map(str, result_Y)) + "\n")
+        f.write("res " + " ".join(map(str, res_values)) + "\n")
+
+    print(f"Generated: {output_path} (N={N}, expected_values={len(res_values)})")
+
+
 # =============================================================================
 # Main Entry Point
 # =============================================================================
@@ -737,6 +810,7 @@ def main():
             "inner_product",
             "longest_102",
             "max_dist_between_syms",
+            "minimal_points",
             "all",
         ],
         help="Which benchmark to generate inputs for",
@@ -818,9 +892,15 @@ def main():
             )
             generate_max_dist_between_syms_test_file(n, output_path)
 
+    if args.benchmark == "minimal_points" or args.benchmark == "all":
+        # Generate minimal_points test files
+        for n in [32, 64, 128, 256]:
+            output_path = os.path.join(args.output_dir, f"minimal_points_{n}_test.txt")
+            generate_minimal_points_test_file(n, output_path)
+
     print("\nTo get InputArgs programmatically:")
     print(
-        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs, get_cryptonets_max_pooling_inputs, get_db_cross_join_trivial_inputs, get_db_variance_inputs, get_inner_product_inputs, get_longest_102_inputs, get_max_dist_between_syms_inputs"
+        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs, get_cryptonets_max_pooling_inputs, get_db_cross_join_trivial_inputs, get_db_variance_inputs, get_inner_product_inputs, get_longest_102_inputs, get_max_dist_between_syms_inputs, get_minimal_points_inputs"
     )
 
 
