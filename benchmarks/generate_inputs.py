@@ -306,6 +306,37 @@ def get_cryptonets_max_pooling_inputs() -> Tuple[List[InputArgs], int]:
     return all_args, non_vec_up_to
 
 
+def get_db_cross_join_trivial_inputs() -> Tuple[List[InputArgs], int]:
+    """
+    Generate inputs for db_join cross join benchmark.
+
+    Len_A/Len_B are the number of tuples (2 attributes each).
+    """
+    all_args = []
+    non_vec_up_to = 0
+
+    # for N in [4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048]:
+    for N in [32, 64]:
+        Len_A = N
+        Len_B = N
+        args = [
+            "--Len_A",
+            str(Len_A),
+            "--Len_B",
+            str(Len_B),
+        ]
+        A = get_rand_ints(Len_A * 2)
+        B = get_rand_ints(Len_B * 2)
+        args.append("--A")
+        args.extend(list(map(str, A)))
+        args.append("--B")
+        args.extend(list(map(str, B)))
+        label = "{}, {}".format(Len_A, Len_B)
+        all_args.append(InputArgs(label, args))
+
+    return all_args, non_vec_up_to
+
+
 def compute_count_102_result(Seq: List[int], Syms: List[int], N: int) -> int:
     """
     Compute the count_102 result.
@@ -420,6 +451,47 @@ def generate_cryptonets_max_pooling_test_file(
     )
 
 
+def compute_db_cross_join_trivial_result(
+    A: List[int], B: List[int], Len_A: int, Len_B: int
+) -> List[int]:
+    """Compute the db cross join result arrays."""
+    Att_A = 2
+    Att_B = 2
+    Att = Att_A + Att_B - 1
+    ret = [0] * (Len_A * Len_B * Att)
+    ret_idx = 0
+
+    for i in range(Len_A):
+        for j in range(Len_B):
+            if A[i * Att_A] == B[j * Att_B]:
+                ret[ret_idx * Att] = A[i * Att_A]
+                ret[ret_idx * Att + 1] = A[i * Att_A + 1]
+                ret[ret_idx * Att + 2] = B[j * Att_B + 1]
+                ret_idx = ret_idx + 1
+
+    return ret
+
+
+def generate_db_cross_join_trivial_test_file(
+    Len_A: int, Len_B: int, output_path: str
+) -> None:
+    """Generate a test input file for the db cross join benchmark."""
+    A = get_rand_ints(Len_A * 2)
+    B = get_rand_ints(Len_B * 2)
+
+    # Compute the correct result
+    res = compute_db_cross_join_trivial_result(A, B, Len_A, Len_B)
+
+    with open(output_path, "w") as f:
+        f.write("A " + " ".join(map(str, A)) + "\n")
+        f.write("B " + " ".join(map(str, B)) + "\n")
+        f.write("res " + " ".join(map(str, res)) + "\n")
+
+    print(
+        f"Generated: {output_path} (Len_A={Len_A}, Len_B={Len_B}, expected_values={len(res)})"
+    )
+
+
 # =============================================================================
 # Main Entry Point
 # =============================================================================
@@ -440,6 +512,7 @@ def main():
             "count_102",
             "count_10s",
             "cryptonets_max_pooling",
+            "db_join",
             "all",
         ],
         help="Which benchmark to generate inputs for",
@@ -489,9 +562,15 @@ def main():
             )
             generate_cryptonets_max_pooling_test_file(rows, cols, output_path)
 
+    if args.benchmark == "db_join" or args.benchmark == "all":
+        # Generate db cross join test files
+        for n in [32, 64]:
+            output_path = os.path.join(args.output_dir, f"db_join_{n}_test.txt")
+            generate_db_cross_join_trivial_test_file(n, n, output_path)
+
     print("\nTo get InputArgs programmatically:")
     print(
-        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs, get_cryptonets_max_pooling_inputs"
+        "  from generate_inputs import get_biometric_inputs, get_convex_hull_inputs, get_count_102_inputs, get_count_10s_inputs, get_cryptonets_max_pooling_inputs, get_db_cross_join_trivial_inputs"
     )
 
 
