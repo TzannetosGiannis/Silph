@@ -95,9 +95,35 @@ def main():
     log_path = Path(args.log_file)
     log_path.parent.mkdir(parents=True, exist_ok=True)
 
-    rows = []
-    with log_path.open("w") as log_file:
+    fieldnames = [
+        "benchmark",
+        "size",
+        "timestamp",
+        "ilp_time_seconds",
+        "status",
+        "error",
+    ]
+    seen = set()
+    if output_path.exists():
+        with output_path.open(newline="") as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                key = (row.get("benchmark"), row.get("size"))
+                if key != (None, None):
+                    seen.add(key)
+
+    write_header = not output_path.exists()
+    with output_path.open("a", newline="") as csvfile, log_path.open("w") as log_file:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        if write_header:
+            writer.writeheader()
+
         for benchmark, size, c_path in iter_benchmarks(benchmarks_dir):
+            if (benchmark, size) in seen:
+                log_file.write(f"[skip] {benchmark}/{size} already recorded\n")
+                log_file.flush()
+                continue
+
             timestamp = datetime.utcnow().isoformat(timespec="seconds") + "Z"
             header = f"[{timestamp}] {benchmark}/{size}"
             command_display = (
@@ -118,56 +144,43 @@ def main():
             log_file.flush()
 
             if returncode != 0:
-                rows.append(
-                    {
-                        "benchmark": benchmark,
-                        "size": size,
-                        "timestamp": timestamp,
-                        "ilp_time_seconds": "",
-                        "status": "error",
-                        "error": format_error(output, returncode),
-                    }
-                )
-                continue
-
-            if ilp_time is None:
-                rows.append(
-                    {
-                        "benchmark": benchmark,
-                        "size": size,
-                        "timestamp": timestamp,
-                        "ilp_time_seconds": "",
-                        "status": "missing_ilp_time",
-                        "error": "ILP time not found in compiler output",
-                    }
-                )
-                continue
-
-            rows.append(
-                {
+                row = {
                     "benchmark": benchmark,
                     "size": size,
                     "timestamp": timestamp,
-                    "ilp_time_seconds": ilp_time,
-                    "status": "ok",
-                    "error": "",
+                    "ilp_time_seconds": "",
+                    "status": "error",
+                    "error": format_error(output, returncode),
                 }
-            )
+                writer.writerow(row)
+                csvfile.flush()
+                continue
 
-    with output_path.open("w", newline="") as csvfile:
-        fieldnames = [
-            "benchmark",
-            "size",
-            "timestamp",
-            "ilp_time_seconds",
-            "status",
-            "error",
-        ]
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(rows)
+            if ilp_time is None:
+                row = {
+                    "benchmark": benchmark,
+                    "size": size,
+                    "timestamp": timestamp,
+                    "ilp_time_seconds": "",
+                    "status": "missing_ilp_time",
+                    "error": "ILP time not found in compiler output",
+                }
+                writer.writerow(row)
+                csvfile.flush()
+                continue
 
-    print(f"Wrote {len(rows)} rows to {output_path}")
+            row = {
+                "benchmark": benchmark,
+                "size": size,
+                "timestamp": timestamp,
+                "ilp_time_seconds": ilp_time,
+                "status": "ok",
+                "error": "",
+            }
+            writer.writerow(row)
+            csvfile.flush()
+
+    print(f"Results written to {output_path}")
     print(f"Detailed log written to {log_path}")
 
 
