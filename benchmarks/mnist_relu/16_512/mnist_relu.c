@@ -15,11 +15,17 @@
 #define LEN_OUTER 512
 #define LEN_TOTAL (LEN_INNER * LEN_OUTER)
 
-int main(
+typedef struct {
+    int result[LEN_TOTAL];
+} Output;
+
+Output main(
     __attribute__((private(0))) int input[LEN_TOTAL],
     __attribute__((private(0))) int OUTPUT_res[LEN_TOTAL]
 )
 {
+    Output output;
+
     for (int i = 0; i < LEN_OUTER; i++) {
         for (int j = 0; j < LEN_INNER; j++) {
             int idx = i * LEN_INNER + j;
@@ -28,8 +34,9 @@ int main(
                 val = input[idx];
             }
             OUTPUT_res[idx] = val;
+            output.result[idx] = val;
         }
     }
 
-    return OUTPUT_res[0];
+    return output;
 }
