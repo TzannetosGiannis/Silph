@@ -8,6 +8,7 @@ from datetime import datetime
 from pathlib import Path
 
 ILP_TIME_RE = re.compile(r"LOG: ILP time: ([0-9.]+)s")
+DEFAULT_TIMEOUT_SECONDS = 120
 
 
 def iter_benchmarks(benchmarks_dir: Path):
@@ -33,7 +34,7 @@ def format_error(output: str, returncode: int):
     return f"exit {returncode}: {message}"
 
 
-def run_compile(repo_root: Path, c_path: Path):
+def run_compile(repo_root: Path, c_path: Path, timeout_seconds: int):
     command = [
         str(repo_root / "target" / "release" / "examples" / "circ"),
         "--parties",
@@ -59,13 +60,18 @@ def run_compile(repo_root: Path, c_path: Path):
     env.setdefault("ABY_SOURCE", str(repo_root.parent / "ABY"))
     env.setdefault("KAHIP_SOURCE", str(repo_root.parent / "KaHIP"))
     env.setdefault("KAHYPAR_SOURCE", str(repo_root.parent / "kahypar"))
-    result = subprocess.run(
-        command,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        env=env,
-    )
+    try:
+        result = subprocess.run(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            env=env,
+            timeout=timeout_seconds,
+        )
+    except subprocess.TimeoutExpired as exc:
+        output = exc.stdout or ""
+        return None, str(output)
     return result.returncode, result.stdout
 
 
@@ -85,6 +91,12 @@ def main():
         "--log-file",
         default="simulation/results/ILP_time.log",
         help="Path to detailed log file.",
+    )
+    parser.add_argument(
+        "--timeout-seconds",
+        type=int,
+        default=DEFAULT_TIMEOUT_SECONDS,
+        help="Max seconds per compilation before killing it.",
     )
     args = parser.parse_args()
 
@@ -136,12 +148,39 @@ def main():
             log_file.write(f"COMMAND: {command_display}\n")
             log_file.flush()
 
-            returncode, output = run_compile(repo_root, c_path)
+            returncode, output = run_compile(
+                repo_root,
+                c_path,
+                args.timeout_seconds,
+            )
             ilp_time = parse_ilp_time(output)
 
             log_file.write(output)
             log_file.write(f"{header} EXIT={returncode}\n")
             log_file.flush()
+
+            if returncode is None:
+                timeout_message = (
+                    f"compile exceeded {args.timeout_seconds}s; killing circ processes"
+                )
+                subprocess.run(
+                    [
+                        "pkill",
+                        "-f",
+                        "/target/release/examples/circ",
+                    ]
+                )
+                row = {
+                    "benchmark": benchmark,
+                    "size": size,
+                    "timestamp": timestamp,
+                    "ilp_time_seconds": "",
+                    "status": "timeout",
+                    "error": timeout_message,
+                }
+                writer.writerow(row)
+                csvfile.flush()
+                continue
 
             if returncode != 0:
                 row = {
