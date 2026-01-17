@@ -77,55 +77,78 @@ def main():
         default="simulation/results/ILP_time.csv",
         help="Path to output CSV file.",
     )
+    parser.add_argument(
+        "--log-file",
+        default="simulation/results/ILP_time.log",
+        help="Path to detailed log file.",
+    )
     args = parser.parse_args()
 
     repo_root = Path(__file__).resolve().parents[1]
     benchmarks_dir = repo_root / "benchmarks"
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    log_path = Path(args.log_file)
+    log_path.parent.mkdir(parents=True, exist_ok=True)
 
     rows = []
-    for benchmark, size, c_path in iter_benchmarks(benchmarks_dir):
-        timestamp = datetime.utcnow().isoformat(timespec="seconds") + "Z"
-        returncode, output = run_compile(repo_root, c_path)
-        ilp_time = parse_ilp_time(output)
+    with log_path.open("w") as log_file:
+        for benchmark, size, c_path in iter_benchmarks(benchmarks_dir):
+            timestamp = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+            header = f"[{timestamp}] {benchmark}/{size}"
+            command_display = (
+                f"{repo_root / 'target' / 'release' / 'examples' / 'circ'} "
+                f"--parties 2 {c_path} mpc --cost-model empirical "
+                f"--selection-scheme smart_lp --part-size 8000 --mut-level 2 "
+                f"--mut-step-size 1 --graph-type 0"
+            )
+            log_file.write(f"{header} START\n")
+            log_file.write(f"COMMAND: {command_display}\n")
+            log_file.flush()
 
-        if returncode != 0:
+            returncode, output = run_compile(repo_root, c_path)
+            ilp_time = parse_ilp_time(output)
+
+            log_file.write(output)
+            log_file.write(f"{header} EXIT={returncode}\n")
+            log_file.flush()
+
+            if returncode != 0:
+                rows.append(
+                    {
+                        "benchmark": benchmark,
+                        "size": size,
+                        "timestamp": timestamp,
+                        "ilp_time_seconds": "",
+                        "status": "error",
+                        "error": format_error(output, returncode),
+                    }
+                )
+                continue
+
+            if ilp_time is None:
+                rows.append(
+                    {
+                        "benchmark": benchmark,
+                        "size": size,
+                        "timestamp": timestamp,
+                        "ilp_time_seconds": "",
+                        "status": "missing_ilp_time",
+                        "error": "ILP time not found in compiler output",
+                    }
+                )
+                continue
+
             rows.append(
                 {
                     "benchmark": benchmark,
                     "size": size,
                     "timestamp": timestamp,
-                    "ilp_time_seconds": "",
-                    "status": "error",
-                    "error": format_error(output, returncode),
+                    "ilp_time_seconds": ilp_time,
+                    "status": "ok",
+                    "error": "",
                 }
             )
-            continue
-
-        if ilp_time is None:
-            rows.append(
-                {
-                    "benchmark": benchmark,
-                    "size": size,
-                    "timestamp": timestamp,
-                    "ilp_time_seconds": "",
-                    "status": "missing_ilp_time",
-                    "error": "ILP time not found in compiler output",
-                }
-            )
-            continue
-
-        rows.append(
-            {
-                "benchmark": benchmark,
-                "size": size,
-                "timestamp": timestamp,
-                "ilp_time_seconds": ilp_time,
-                "status": "ok",
-                "error": "",
-            }
-        )
 
     with output_path.open("w", newline="") as csvfile:
         fieldnames = [
@@ -141,6 +164,7 @@ def main():
         writer.writerows(rows)
 
     print(f"Wrote {len(rows)} rows to {output_path}")
+    print(f"Detailed log written to {log_path}")
 
 
 if __name__ == "__main__":
