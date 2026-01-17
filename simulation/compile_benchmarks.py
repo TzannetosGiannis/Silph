@@ -55,6 +55,10 @@ def run_compile(repo_root: Path, c_path: Path):
     ]
     env = os.environ.copy()
     env["CARGO_MANIFEST_DIR"] = str(repo_root)
+    env.setdefault("CARGO_FEATURE_C_NO_TESTS", "1")
+    env.setdefault("ABY_SOURCE", str(repo_root.parent / "ABY"))
+    env.setdefault("KAHIP_SOURCE", str(repo_root.parent / "KaHIP"))
+    env.setdefault("KAHYPAR_SOURCE", str(repo_root.parent / "kahypar"))
     result = subprocess.run(
         command,
         stdout=subprocess.PIPE,
