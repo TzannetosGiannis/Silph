@@ -7,7 +7,7 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 
-ILP_TIME_RE = re.compile(r"LOG: ILP time: ([0-9.]+)s")
+ILP_TIME_RE = re.compile(r"LOG: ILP time: ([0-9.]+)(ms|s)")
 DEFAULT_TIMEOUT_SECONDS = 120
 
 
@@ -24,7 +24,9 @@ def parse_ilp_time(output: str):
     matches = ILP_TIME_RE.findall(output)
     if not matches:
         return None
-    return matches[-1]
+    value, unit = matches[-1]
+    seconds = float(value) / 1000 if unit == "ms" else float(value)
+    return f"{seconds:.6f}"
 
 
 def format_error(output: str, returncode: int):
