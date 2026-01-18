@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 import argparse
+import csv
 import json
 import os
+import re
 import socket
 import subprocess
 from datetime import datetime
 from pathlib import Path
 
+ASSIGNMENT_TIME_RE = re.compile(r"LOG: Assignment time: ([0-9.]+)(ms|s)")
+ILP_TIME_RE = re.compile(r"LOG: ILP time: ([0-9.]+)(ms|s)")
+SERVER_TOTAL_TIME_RE = re.compile(r"LOG: Server total time: ([0-9.]+)")
 DEFAULT_COMPILE_TIMEOUT_SECONDS = 120
 
 
@@ -21,6 +26,22 @@ def iter_benchmarks(benchmarks_dir: Path):
 
 def timestamp():
     return datetime.utcnow().isoformat(timespec="seconds") + "Z"
+
+
+def parse_time_seconds(pattern: re.Pattern, output: str):
+    matches = pattern.findall(output)
+    if not matches:
+        return None
+    value, unit = matches[-1]
+    seconds = float(value) / 1000 if unit == "ms" else float(value)
+    return f"{seconds:.6f}"
+
+
+def parse_total_time(pattern: re.Pattern, output: str):
+    matches = pattern.findall(output)
+    if not matches:
+        return None
+    return f"{float(matches[-1]):.6f}"
 
 
 def send_message(conn: socket.socket, payload: dict):
@@ -40,7 +61,17 @@ def recv_message(conn: socket.socket):
             return json.loads(line.decode("utf-8"))
 
 
-def compile_benchmark(repo_root: Path, c_path: Path, log_file, timeout_seconds: int):
+def compile_benchmark(
+    repo_root: Path,
+    c_path: Path,
+    log_file,
+    timeout_seconds: int,
+    csv_writer,
+    csv_file,
+    benchmark: str,
+    size: str,
+    role: str,
+):
     command = [
         str(repo_root / "target" / "release" / "examples" / "circ"),
         "--parties",
@@ -84,11 +115,45 @@ def compile_benchmark(repo_root: Path, c_path: Path, log_file, timeout_seconds: 
         log_file.write(f"{timestamp()} SERVER compile timeout\n")
         log_file.flush()
         subprocess.run(["pkill", "-f", "/target/release/examples/circ"])
+        csv_writer.writerow(
+            {
+                "benchmark": benchmark,
+                "size": size,
+                "timestamp": timestamp(),
+                "role": role,
+                "phase": "compile",
+                "ilp_time_seconds": "",
+                "assignment_time_seconds": "",
+                "total_time_seconds": "",
+                "status": "timeout",
+                "error": f"compile exceeded {timeout_seconds}s",
+            }
+        )
+        csv_file.flush()
         return False
 
     log_file.write(result.stdout)
     log_file.write(f"{timestamp()} SERVER compile exit={result.returncode}\n")
     log_file.flush()
+
+    ilp_time = parse_time_seconds(ILP_TIME_RE, result.stdout)
+    assignment_time = parse_time_seconds(ASSIGNMENT_TIME_RE, result.stdout)
+    csv_writer.writerow(
+        {
+            "benchmark": benchmark,
+            "size": size,
+            "timestamp": timestamp(),
+            "role": role,
+            "phase": "compile",
+            "ilp_time_seconds": ilp_time or "",
+            "assignment_time_seconds": assignment_time or "",
+            "total_time_seconds": "",
+            "status": "ok" if result.returncode == 0 else "error",
+            "error": "" if result.returncode == 0 else f"exit {result.returncode}",
+        }
+    )
+    csv_file.flush()
+
     return result.returncode == 0
 
 
@@ -99,6 +164,9 @@ def run_party(
     role: int,
     log_file,
     timeout_seconds: int,
+    csv_writer,
+    csv_file,
+    role_label: str,
 ):
     test_path = repo_root / "benchmarks" / benchmark / size / f"{benchmark}_test.txt"
     command = [
@@ -132,11 +200,43 @@ def run_party(
         log_file.write(f"{timestamp()} SERVER party{role} timeout\n")
         log_file.flush()
         subprocess.run(["pkill", "-f", "aby_interpreter"])
+        csv_writer.writerow(
+            {
+                "benchmark": benchmark,
+                "size": size,
+                "timestamp": timestamp(),
+                "role": role_label,
+                "phase": "run",
+                "ilp_time_seconds": "",
+                "assignment_time_seconds": "",
+                "total_time_seconds": "",
+                "status": "timeout",
+                "error": f"run exceeded {timeout_seconds}s",
+            }
+        )
+        csv_file.flush()
         return False
 
     log_file.write(result.stdout)
     log_file.write(f"{timestamp()} SERVER party{role} exit={result.returncode}\n")
     log_file.flush()
+
+    total_time = parse_total_time(SERVER_TOTAL_TIME_RE, result.stdout)
+    csv_writer.writerow(
+        {
+            "benchmark": benchmark,
+            "size": size,
+            "timestamp": timestamp(),
+            "role": role_label,
+            "phase": "run",
+            "ilp_time_seconds": "",
+            "assignment_time_seconds": "",
+            "total_time_seconds": total_time or "",
+            "status": "ok" if result.returncode == 0 else "error",
+            "error": "" if result.returncode == 0 else f"exit {result.returncode}",
+        }
+    )
+    csv_file.flush()
     return result.returncode == 0
 
 
@@ -161,13 +261,36 @@ def main():
         default="simulation/results/server_benchmark.log",
         help="Log file path.",
     )
+    parser.add_argument(
+        "--csv-file",
+        default="simulation/results/server_benchmark.csv",
+        help="CSV output path.",
+    )
     args = parser.parse_args()
 
     repo_root = Path(__file__).resolve().parents[1]
     log_path = Path(args.log_file)
     log_path.parent.mkdir(parents=True, exist_ok=True)
+    csv_path = Path(args.csv_file)
+    csv_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with log_path.open("w") as log_file:
+    fieldnames = [
+        "benchmark",
+        "size",
+        "timestamp",
+        "role",
+        "phase",
+        "ilp_time_seconds",
+        "assignment_time_seconds",
+        "total_time_seconds",
+        "status",
+        "error",
+    ]
+
+    with log_path.open("w") as log_file, csv_path.open("w", newline="") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+
         log_file.write(f"{timestamp()} SERVER listening on {args.host}:{args.port}\n")
         log_file.flush()
 
@@ -192,6 +315,11 @@ def main():
                         c_path,
                         log_file,
                         args.compile_timeout_seconds,
+                        writer,
+                        csv_file,
+                        benchmark,
+                        size,
+                        "server",
                     ):
                         send_message(
                             conn,
@@ -230,7 +358,15 @@ def main():
                     )
 
                     run_party(
-                        repo_root, benchmark, size, 0, log_file, args.timeout_seconds
+                        repo_root,
+                        benchmark,
+                        size,
+                        0,
+                        log_file,
+                        args.timeout_seconds,
+                        writer,
+                        csv_file,
+                        "server",
                     )
 
                 send_message(conn, {"type": "done"})
