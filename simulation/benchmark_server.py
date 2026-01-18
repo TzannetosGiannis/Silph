@@ -287,9 +287,20 @@ def main():
         "error",
     ]
 
-    with log_path.open("w") as log_file, csv_path.open("w", newline="") as csv_file:
+    completed_runs = set()
+    if csv_path.exists():
+        with csv_path.open(newline="") as csv_file:
+            reader = csv.DictReader(csv_file)
+            for row in reader:
+                if row.get("phase") == "run" and row.get("role") == "server":
+                    key = (row.get("benchmark"), row.get("size"))
+                    if key != (None, None):
+                        completed_runs.add(key)
+
+    with log_path.open("w") as log_file, csv_path.open("a", newline="") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-        writer.writeheader()
+        if not csv_path.exists() or csv_path.stat().st_size == 0:
+            writer.writeheader()
 
         log_file.write(f"{timestamp()} SERVER listening on {args.host}:{args.port}\n")
         log_file.flush()
@@ -310,6 +321,21 @@ def main():
                         f"{timestamp()} SERVER starting {benchmark}/{size}\n"
                     )
                     log_file.flush()
+                    if (benchmark, size) in completed_runs:
+                        log_file.write(
+                            f"{timestamp()} SERVER skipping completed {benchmark}/{size}\n"
+                        )
+                        log_file.flush()
+                        send_message(
+                            conn,
+                            {
+                                "type": "skip",
+                                "benchmark": benchmark,
+                                "size": size,
+                            },
+                        )
+                        continue
+
                     if not compile_benchmark(
                         repo_root,
                         c_path,
@@ -357,6 +383,13 @@ def main():
                         },
                     )
 
+                    if (benchmark, size) in completed_runs:
+                        log_file.write(
+                            f"{timestamp()} SERVER skipping run {benchmark}/{size}\n"
+                        )
+                        log_file.flush()
+                        continue
+
                     run_party(
                         repo_root,
                         benchmark,
@@ -368,6 +401,7 @@ def main():
                         csv_file,
                         "server",
                     )
+                    completed_runs.add((benchmark, size))
 
                 send_message(conn, {"type": "done"})
                 log_file.write(f"{timestamp()} SERVER completed all benchmarks\n")

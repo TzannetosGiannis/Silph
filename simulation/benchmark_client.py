@@ -277,9 +277,20 @@ def main():
         "error",
     ]
 
-    with log_path.open("w") as log_file, csv_path.open("w", newline="") as csv_file:
+    completed_runs = set()
+    if csv_path.exists():
+        with csv_path.open(newline="") as csv_file:
+            reader = csv.DictReader(csv_file)
+            for row in reader:
+                if row.get("phase") == "run" and row.get("role") == "client":
+                    key = (row.get("benchmark"), row.get("size"))
+                    if key != (None, None):
+                        completed_runs.add(key)
+
+    with log_path.open("w") as log_file, csv_path.open("a", newline="") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-        writer.writeheader()
+        if not csv_path.exists() or csv_path.stat().st_size == 0:
+            writer.writeheader()
 
         log_file.write(
             f"{timestamp()} CLIENT connecting to {args.server_host}:{args.server_port}\n"
@@ -299,6 +310,23 @@ def main():
                 if msg_type == "compile":
                     benchmark = message.get("benchmark")
                     size = message.get("size")
+                    if (benchmark, size) in completed_runs:
+                        log_file.write(
+                            f"{timestamp()} CLIENT skipping completed {benchmark}/{size}\n"
+                        )
+                        log_file.flush()
+                        send_message(
+                            sock,
+                            {
+                                "type": "compile_done",
+                                "benchmark": benchmark,
+                                "size": size,
+                                "success": True,
+                                "skipped": True,
+                            },
+                        )
+                        continue
+
                     log_file.write(
                         f"{timestamp()} CLIENT compile request {benchmark}/{size}\n"
                     )
@@ -327,6 +355,13 @@ def main():
                 if msg_type == "run":
                     benchmark = message.get("benchmark")
                     size = message.get("size")
+                    if (benchmark, size) in completed_runs:
+                        log_file.write(
+                            f"{timestamp()} CLIENT skipping run {benchmark}/{size}\n"
+                        )
+                        log_file.flush()
+                        continue
+
                     log_file.write(
                         f"{timestamp()} CLIENT run request {benchmark}/{size}\n"
                     )
@@ -342,6 +377,7 @@ def main():
                         csv_file,
                         "client",
                     )
+                    completed_runs.add((benchmark, size))
                     continue
 
                 if msg_type == "compile_failed":
@@ -349,6 +385,15 @@ def main():
                     size = message.get("size")
                     log_file.write(
                         f"{timestamp()} CLIENT server compile failed {benchmark}/{size}\n"
+                    )
+                    log_file.flush()
+                    continue
+
+                if msg_type == "skip":
+                    benchmark = message.get("benchmark")
+                    size = message.get("size")
+                    log_file.write(
+                        f"{timestamp()} CLIENT skipping {benchmark}/{size}\n"
                     )
                     log_file.flush()
                     continue
