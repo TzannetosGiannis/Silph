@@ -288,14 +288,22 @@ def main():
     ]
 
     completed_runs = set()
+    skipped_runs = set()
     if csv_path.exists():
         with csv_path.open(newline="") as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
+                key = (row.get("benchmark"), row.get("size"))
+                if key == (None, None):
+                    continue
                 if row.get("phase") == "run" and row.get("role") == "server":
-                    key = (row.get("benchmark"), row.get("size"))
-                    if key != (None, None):
-                        completed_runs.add(key)
+                    completed_runs.add(key)
+                if (
+                    row.get("phase") == "compile"
+                    and row.get("role") == "server"
+                    and row.get("status") in {"timeout", "error"}
+                ):
+                    skipped_runs.add(key)
 
     with log_path.open("w") as log_file, csv_path.open("a", newline="") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
@@ -336,6 +344,21 @@ def main():
                         )
                         continue
 
+                    if (benchmark, size) in skipped_runs:
+                        log_file.write(
+                            f"{timestamp()} SERVER skipping failed compile {benchmark}/{size}\n"
+                        )
+                        log_file.flush()
+                        send_message(
+                            conn,
+                            {
+                                "type": "skip",
+                                "benchmark": benchmark,
+                                "size": size,
+                            },
+                        )
+                        continue
+
                     if not compile_benchmark(
                         repo_root,
                         c_path,
@@ -347,6 +370,7 @@ def main():
                         size,
                         "server",
                     ):
+                        skipped_runs.add((benchmark, size))
                         send_message(
                             conn,
                             {

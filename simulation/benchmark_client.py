@@ -278,14 +278,22 @@ def main():
     ]
 
     completed_runs = set()
+    skipped_runs = set()
     if csv_path.exists():
         with csv_path.open(newline="") as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
+                key = (row.get("benchmark"), row.get("size"))
+                if key == (None, None):
+                    continue
                 if row.get("phase") == "run" and row.get("role") == "client":
-                    key = (row.get("benchmark"), row.get("size"))
-                    if key != (None, None):
-                        completed_runs.add(key)
+                    completed_runs.add(key)
+                if (
+                    row.get("phase") == "compile"
+                    and row.get("role") == "client"
+                    and row.get("status") in {"timeout", "error"}
+                ):
+                    skipped_runs.add(key)
 
     with log_path.open("w") as log_file, csv_path.open("a", newline="") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
@@ -327,6 +335,23 @@ def main():
                         )
                         continue
 
+                    if (benchmark, size) in skipped_runs:
+                        log_file.write(
+                            f"{timestamp()} CLIENT skipping failed compile {benchmark}/{size}\n"
+                        )
+                        log_file.flush()
+                        send_message(
+                            sock,
+                            {
+                                "type": "compile_done",
+                                "benchmark": benchmark,
+                                "size": size,
+                                "success": False,
+                                "skipped": True,
+                            },
+                        )
+                        continue
+
                     log_file.write(
                         f"{timestamp()} CLIENT compile request {benchmark}/{size}\n"
                     )
@@ -341,6 +366,8 @@ def main():
                         csv_file,
                         "client",
                     )
+                    if not success:
+                        skipped_runs.add((benchmark, size))
                     send_message(
                         sock,
                         {
