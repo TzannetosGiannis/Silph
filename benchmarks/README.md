@@ -29,6 +29,12 @@ benchmarks/
 
 ### Step 1: Compile C to ABY Circuit
 
+You can choose one of the three ILP/LP-based selection schemes when compiling:
+
+- `smart_glp` (G-ILP in the paper, global LP relaxation)
+- `smart_lp` (T-ILP in the paper, partitioned ILP with mutation)
+- `css` (C-ILP in the paper, call-site similarity ILP)
+
 ```bash
 cd ~/Silph
 export CARGO_MANIFEST_DIR=$PWD
