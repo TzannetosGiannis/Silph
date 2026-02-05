@@ -56,6 +56,7 @@ def compile_benchmark(
     repo_root: Path,
     benchmark: str,
     size: str,
+    selection_scheme: str,
     log_file,
     timeout_seconds: int,
     csv_writer,
@@ -72,7 +73,7 @@ def compile_benchmark(
         "--cost-model",
         "empirical",
         "--selection-scheme",
-        "smart_lp",
+        selection_scheme,
         "--part-size",
         "8000",
         "--mut-level",
@@ -110,6 +111,7 @@ def compile_benchmark(
             {
                 "benchmark": benchmark,
                 "size": size,
+                "selection_scheme": selection_scheme,
                 "timestamp": timestamp(),
                 "role": role,
                 "phase": "compile",
@@ -133,6 +135,7 @@ def compile_benchmark(
         {
             "benchmark": benchmark,
             "size": size,
+            "selection_scheme": selection_scheme,
             "timestamp": timestamp(),
             "role": role,
             "phase": "compile",
@@ -151,6 +154,7 @@ def run_party(
     repo_root: Path,
     benchmark: str,
     size: str,
+    selection_scheme: str,
     role: int,
     log_file,
     timeout_seconds: int,
@@ -194,6 +198,7 @@ def run_party(
             {
                 "benchmark": benchmark,
                 "size": size,
+                "selection_scheme": selection_scheme,
                 "timestamp": timestamp(),
                 "role": role_label,
                 "phase": "run",
@@ -216,6 +221,7 @@ def run_party(
         {
             "benchmark": benchmark,
             "size": size,
+            "selection_scheme": selection_scheme,
             "timestamp": timestamp(),
             "role": role_label,
             "phase": "run",
@@ -267,6 +273,7 @@ def main():
     fieldnames = [
         "benchmark",
         "size",
+        "selection_scheme",
         "timestamp",
         "role",
         "phase",
@@ -283,8 +290,12 @@ def main():
         with csv_path.open(newline="") as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
-                key = (row.get("benchmark"), row.get("size"))
-                if key == (None, None):
+                key = (
+                    row.get("benchmark"),
+                    row.get("size"),
+                    row.get("selection_scheme"),
+                )
+                if key == (None, None, None):
                     continue
                 if row.get("phase") == "run" and row.get("role") == "client":
                     completed_runs.add(key)
@@ -318,9 +329,11 @@ def main():
                 if msg_type == "compile":
                     benchmark = message.get("benchmark")
                     size = message.get("size")
-                    if (benchmark, size) in completed_runs:
+                    selection_scheme = message.get("selection_scheme")
+                    run_key = (benchmark, size, selection_scheme)
+                    if run_key in completed_runs:
                         log_file.write(
-                            f"{timestamp()} CLIENT skipping completed {benchmark}/{size}\n"
+                            f"{timestamp()} CLIENT skipping completed {benchmark}/{size} ({selection_scheme})\n"
                         )
                         log_file.flush()
                         send_message(
@@ -329,15 +342,16 @@ def main():
                                 "type": "compile_done",
                                 "benchmark": benchmark,
                                 "size": size,
+                                "selection_scheme": selection_scheme,
                                 "success": True,
                                 "skipped": True,
                             },
                         )
                         continue
 
-                    if (benchmark, size) in skipped_runs:
+                    if run_key in skipped_runs:
                         log_file.write(
-                            f"{timestamp()} CLIENT skipping failed compile {benchmark}/{size}\n"
+                            f"{timestamp()} CLIENT skipping failed compile {benchmark}/{size} ({selection_scheme})\n"
                         )
                         log_file.flush()
                         send_message(
@@ -346,6 +360,7 @@ def main():
                                 "type": "compile_done",
                                 "benchmark": benchmark,
                                 "size": size,
+                                "selection_scheme": selection_scheme,
                                 "success": False,
                                 "skipped": True,
                             },
@@ -353,13 +368,14 @@ def main():
                         continue
 
                     log_file.write(
-                        f"{timestamp()} CLIENT compile request {benchmark}/{size}\n"
+                        f"{timestamp()} CLIENT compile request {benchmark}/{size} ({selection_scheme})\n"
                     )
                     log_file.flush()
                     success = compile_benchmark(
                         repo_root,
                         benchmark,
                         size,
+                        selection_scheme,
                         log_file,
                         args.compile_timeout_seconds,
                         writer,
@@ -367,13 +383,14 @@ def main():
                         "client",
                     )
                     if not success:
-                        skipped_runs.add((benchmark, size))
+                        skipped_runs.add(run_key)
                     send_message(
                         sock,
                         {
                             "type": "compile_done",
                             "benchmark": benchmark,
                             "size": size,
+                            "selection_scheme": selection_scheme,
                             "success": success,
                         },
                     )
@@ -382,21 +399,24 @@ def main():
                 if msg_type == "run":
                     benchmark = message.get("benchmark")
                     size = message.get("size")
-                    if (benchmark, size) in completed_runs:
+                    selection_scheme = message.get("selection_scheme")
+                    run_key = (benchmark, size, selection_scheme)
+                    if run_key in completed_runs:
                         log_file.write(
-                            f"{timestamp()} CLIENT skipping run {benchmark}/{size}\n"
+                            f"{timestamp()} CLIENT skipping run {benchmark}/{size} ({selection_scheme})\n"
                         )
                         log_file.flush()
                         continue
 
                     log_file.write(
-                        f"{timestamp()} CLIENT run request {benchmark}/{size}\n"
+                        f"{timestamp()} CLIENT run request {benchmark}/{size} ({selection_scheme})\n"
                     )
                     log_file.flush()
                     run_party(
                         repo_root,
                         benchmark,
                         size,
+                        selection_scheme,
                         1,
                         log_file,
                         args.timeout_seconds,
@@ -404,14 +424,15 @@ def main():
                         csv_file,
                         "client",
                     )
-                    completed_runs.add((benchmark, size))
+                    completed_runs.add(run_key)
                     continue
 
                 if msg_type == "compile_failed":
                     benchmark = message.get("benchmark")
                     size = message.get("size")
+                    selection_scheme = message.get("selection_scheme")
                     log_file.write(
-                        f"{timestamp()} CLIENT server compile failed {benchmark}/{size}\n"
+                        f"{timestamp()} CLIENT server compile failed {benchmark}/{size} ({selection_scheme})\n"
                     )
                     log_file.flush()
                     continue
@@ -419,8 +440,9 @@ def main():
                 if msg_type == "skip":
                     benchmark = message.get("benchmark")
                     size = message.get("size")
+                    selection_scheme = message.get("selection_scheme")
                     log_file.write(
-                        f"{timestamp()} CLIENT skipping {benchmark}/{size}\n"
+                        f"{timestamp()} CLIENT skipping {benchmark}/{size} ({selection_scheme})\n"
                     )
                     log_file.flush()
                     continue

@@ -24,6 +24,10 @@ def iter_benchmarks(benchmarks_dir: Path):
         yield benchmark, size, c_path
 
 
+def iter_selection_schemes():
+    return ["smart_glp", "smart_lp", "css"]
+
+
 def timestamp():
     return datetime.utcnow().isoformat(timespec="seconds") + "Z"
 
@@ -64,6 +68,7 @@ def recv_message(conn: socket.socket):
 def compile_benchmark(
     repo_root: Path,
     c_path: Path,
+    selection_scheme: str,
     log_file,
     timeout_seconds: int,
     csv_writer,
@@ -81,7 +86,7 @@ def compile_benchmark(
         "--cost-model",
         "empirical",
         "--selection-scheme",
-        "smart_lp",
+        selection_scheme,
         "--part-size",
         "8000",
         "--mut-level",
@@ -119,6 +124,7 @@ def compile_benchmark(
             {
                 "benchmark": benchmark,
                 "size": size,
+                "selection_scheme": selection_scheme,
                 "timestamp": timestamp(),
                 "role": role,
                 "phase": "compile",
@@ -142,6 +148,7 @@ def compile_benchmark(
         {
             "benchmark": benchmark,
             "size": size,
+            "selection_scheme": selection_scheme,
             "timestamp": timestamp(),
             "role": role,
             "phase": "compile",
@@ -161,6 +168,7 @@ def run_party(
     repo_root: Path,
     benchmark: str,
     size: str,
+    selection_scheme: str,
     role: int,
     log_file,
     timeout_seconds: int,
@@ -204,6 +212,7 @@ def run_party(
             {
                 "benchmark": benchmark,
                 "size": size,
+                "selection_scheme": selection_scheme,
                 "timestamp": timestamp(),
                 "role": role_label,
                 "phase": "run",
@@ -226,6 +235,7 @@ def run_party(
         {
             "benchmark": benchmark,
             "size": size,
+            "selection_scheme": selection_scheme,
             "timestamp": timestamp(),
             "role": role_label,
             "phase": "run",
@@ -277,6 +287,7 @@ def main():
     fieldnames = [
         "benchmark",
         "size",
+        "selection_scheme",
         "timestamp",
         "role",
         "phase",
@@ -293,8 +304,12 @@ def main():
         with csv_path.open(newline="") as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
-                key = (row.get("benchmark"), row.get("size"))
-                if key == (None, None):
+                key = (
+                    row.get("benchmark"),
+                    row.get("size"),
+                    row.get("selection_scheme"),
+                )
+                if key == (None, None, None):
                     continue
                 if row.get("phase") == "run" and row.get("role") == "server":
                     completed_runs.add(key)
@@ -325,107 +340,123 @@ def main():
                 for benchmark, size, c_path in iter_benchmarks(
                     repo_root / "benchmarks"
                 ):
-                    log_file.write(
-                        f"{timestamp()} SERVER starting {benchmark}/{size}\n"
-                    )
-                    log_file.flush()
-                    if (benchmark, size) in completed_runs:
+                    for selection_scheme in iter_selection_schemes():
                         log_file.write(
-                            f"{timestamp()} SERVER skipping completed {benchmark}/{size}\n"
+                            f"{timestamp()} SERVER starting {benchmark}/{size} ({selection_scheme})\n"
                         )
                         log_file.flush()
+                        run_key = (benchmark, size, selection_scheme)
+                        if run_key in completed_runs:
+                            log_file.write(
+                                f"{timestamp()} SERVER skipping completed {benchmark}/{size} ({selection_scheme})\n"
+                            )
+                            log_file.flush()
+                            send_message(
+                                conn,
+                                {
+                                    "type": "skip",
+                                    "benchmark": benchmark,
+                                    "size": size,
+                                    "selection_scheme": selection_scheme,
+                                },
+                            )
+                            continue
+
+                        if run_key in skipped_runs:
+                            log_file.write(
+                                f"{timestamp()} SERVER skipping failed compile {benchmark}/{size} ({selection_scheme})\n"
+                            )
+                            log_file.flush()
+                            send_message(
+                                conn,
+                                {
+                                    "type": "skip",
+                                    "benchmark": benchmark,
+                                    "size": size,
+                                    "selection_scheme": selection_scheme,
+                                },
+                            )
+                            continue
+
+                        if not compile_benchmark(
+                            repo_root,
+                            c_path,
+                            selection_scheme,
+                            log_file,
+                            args.compile_timeout_seconds,
+                            writer,
+                            csv_file,
+                            benchmark,
+                            size,
+                            "server",
+                        ):
+                            skipped_runs.add(run_key)
+                            send_message(
+                                conn,
+                                {
+                                    "type": "compile_failed",
+                                    "benchmark": benchmark,
+                                    "size": size,
+                                    "selection_scheme": selection_scheme,
+                                },
+                            )
+                            continue
+
                         send_message(
                             conn,
                             {
-                                "type": "skip",
+                                "type": "compile",
                                 "benchmark": benchmark,
                                 "size": size,
+                                "selection_scheme": selection_scheme,
                             },
                         )
-                        continue
 
-                    if (benchmark, size) in skipped_runs:
-                        log_file.write(
-                            f"{timestamp()} SERVER skipping failed compile {benchmark}/{size}\n"
-                        )
-                        log_file.flush()
+                        response = recv_message(conn)
+                        if not response or response.get("type") != "compile_done":
+                            log_file.write(
+                                f"{timestamp()} SERVER client compile missing for {benchmark}/{size} ({selection_scheme})\n"
+                            )
+                            log_file.flush()
+                            continue
+                        response_scheme = response.get("selection_scheme")
+                        if response_scheme != selection_scheme:
+                            log_file.write(
+                                f"{timestamp()} SERVER client scheme mismatch for {benchmark}/{size} ({selection_scheme})\n"
+                            )
+                            log_file.flush()
+                            continue
+
                         send_message(
                             conn,
                             {
-                                "type": "skip",
+                                "type": "run",
                                 "benchmark": benchmark,
                                 "size": size,
+                                "selection_scheme": selection_scheme,
                             },
                         )
-                        continue
 
-                    if not compile_benchmark(
-                        repo_root,
-                        c_path,
-                        log_file,
-                        args.compile_timeout_seconds,
-                        writer,
-                        csv_file,
-                        benchmark,
-                        size,
-                        "server",
-                    ):
-                        skipped_runs.add((benchmark, size))
-                        send_message(
-                            conn,
-                            {
-                                "type": "compile_failed",
-                                "benchmark": benchmark,
-                                "size": size,
-                            },
+                        if run_key in completed_runs:
+                            log_file.write(
+                                f"{timestamp()} SERVER skipping run {benchmark}/{size} ({selection_scheme})\n"
+                            )
+                            log_file.flush()
+                            continue
+
+                        run_party(
+                            repo_root,
+                            benchmark,
+                            size,
+                            selection_scheme,
+                            0,
+                            log_file,
+                            args.timeout_seconds,
+                            writer,
+                            csv_file,
+                            "server",
                         )
-                        continue
-
-                    send_message(
-                        conn,
-                        {
-                            "type": "compile",
-                            "benchmark": benchmark,
-                            "size": size,
-                        },
-                    )
-
-                    response = recv_message(conn)
-                    if not response or response.get("type") != "compile_done":
-                        log_file.write(
-                            f"{timestamp()} SERVER client compile missing for {benchmark}/{size}\n"
-                        )
-                        log_file.flush()
-                        continue
-
-                    send_message(
-                        conn,
-                        {
-                            "type": "run",
-                            "benchmark": benchmark,
-                            "size": size,
-                        },
-                    )
-
-                    if (benchmark, size) in completed_runs:
-                        log_file.write(
-                            f"{timestamp()} SERVER skipping run {benchmark}/{size}\n"
-                        )
-                        log_file.flush()
-                        continue
-
-                    run_party(
-                        repo_root,
-                        benchmark,
-                        size,
-                        0,
-                        log_file,
-                        args.timeout_seconds,
-                        writer,
-                        csv_file,
-                        "server",
-                    )
-                    completed_runs.add((benchmark, size))
+                        completed_runs.add(run_key)
 
                 send_message(conn, {"type": "done"})
                 log_file.write(f"{timestamp()} SERVER completed all benchmarks\n")
