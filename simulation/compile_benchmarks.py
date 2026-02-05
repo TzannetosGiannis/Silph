@@ -7,7 +7,7 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 
-ILP_TIME_RE = re.compile(r"LOG: ILP time: ([0-9.]+)(ms|s)")
+ILP_TIME_RE = re.compile(r"LOG: Assignment time: ([0-9.]+)(ms|s)")
 DEFAULT_TIMEOUT_SECONDS = 120
 
 
@@ -18,6 +18,10 @@ def iter_benchmarks(benchmarks_dir: Path):
         if c_path.name != f"{benchmark}.c":
             continue
         yield benchmark, size, c_path
+
+
+def iter_selection_schemes():
+    return ["smart_glp", "smart_lp", "css"]
 
 
 def parse_ilp_time(output: str):
@@ -36,7 +40,12 @@ def format_error(output: str, returncode: int):
     return f"exit {returncode}: {message}"
 
 
-def run_compile(repo_root: Path, c_path: Path, timeout_seconds: int):
+def run_compile(
+    repo_root: Path,
+    c_path: Path,
+    selection_scheme: str,
+    timeout_seconds: int,
+):
     command = [
         str(repo_root / "target" / "release" / "examples" / "circ"),
         "--parties",
@@ -46,7 +55,7 @@ def run_compile(repo_root: Path, c_path: Path, timeout_seconds: int):
         "--cost-model",
         "empirical",
         "--selection-scheme",
-        "smart_lp",
+        selection_scheme,
         "--part-size",
         "8000",
         "--mut-level",
@@ -112,8 +121,9 @@ def main():
     fieldnames = [
         "benchmark",
         "size",
+        "selection_scheme",
         "timestamp",
-        "ilp_time_seconds",
+        "ilp_time_assignment",
         "status",
         "error",
     ]
@@ -122,8 +132,12 @@ def main():
         with output_path.open(newline="") as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                key = (row.get("benchmark"), row.get("size"))
-                if key != (None, None):
+                key = (
+                    row.get("benchmark"),
+                    row.get("size"),
+                    row.get("selection_scheme"),
+                )
+                if key != (None, None, None):
                     seen.add(key)
 
     write_header = not output_path.exists()
@@ -133,93 +147,102 @@ def main():
             writer.writeheader()
 
         for benchmark, size, c_path in iter_benchmarks(benchmarks_dir):
-            if (benchmark, size) in seen:
-                log_file.write(f"[skip] {benchmark}/{size} already recorded\n")
+            for selection_scheme in iter_selection_schemes():
+                if (benchmark, size, selection_scheme) in seen:
+                    log_file.write(
+                        f"[skip] {benchmark}/{size} {selection_scheme} already recorded\n"
+                    )
+                    log_file.flush()
+                    continue
+
+                timestamp = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+                header = f"[{timestamp}] {benchmark}/{size} ({selection_scheme})"
+                command_display = (
+                    f"{repo_root / 'target' / 'release' / 'examples' / 'circ'} "
+                    f"--parties 2 {c_path} mpc --cost-model empirical "
+                    f"--selection-scheme {selection_scheme} --part-size 8000 "
+                    f"--mut-level 2 --mut-step-size 1 --graph-type 0"
+                )
+                log_file.write(f"{header} START\n")
+                log_file.write(f"COMMAND: {command_display}\n")
                 log_file.flush()
-                continue
 
-            timestamp = datetime.utcnow().isoformat(timespec="seconds") + "Z"
-            header = f"[{timestamp}] {benchmark}/{size}"
-            command_display = (
-                f"{repo_root / 'target' / 'release' / 'examples' / 'circ'} "
-                f"--parties 2 {c_path} mpc --cost-model empirical "
-                f"--selection-scheme smart_lp --part-size 8000 --mut-level 2 "
-                f"--mut-step-size 1 --graph-type 0"
-            )
-            log_file.write(f"{header} START\n")
-            log_file.write(f"COMMAND: {command_display}\n")
-            log_file.flush()
-
-            returncode, output = run_compile(
-                repo_root,
-                c_path,
-                args.timeout_seconds,
-            )
-            ilp_time = parse_ilp_time(output)
-
-            log_file.write(output)
-            log_file.write(f"{header} EXIT={returncode}\n")
-            log_file.flush()
-
-            if returncode is None:
-                timeout_message = (
-                    f"compile exceeded {args.timeout_seconds}s; killing circ processes"
+                returncode, output = run_compile(
+                    repo_root,
+                    c_path,
+                    selection_scheme,
+                    args.timeout_seconds,
                 )
-                subprocess.run(
-                    [
-                        "pkill",
-                        "-f",
-                        "/target/release/examples/circ",
-                    ]
-                )
+                ilp_time = parse_ilp_time(output)
+
+                log_file.write(output)
+                log_file.write(f"{header} EXIT={returncode}\n")
+                log_file.flush()
+
+                if returncode is None:
+                    timeout_message = (
+                        f"compile exceeded {args.timeout_seconds}s; "
+                        "killing circ processes"
+                    )
+                    subprocess.run(
+                        [
+                            "pkill",
+                            "-f",
+                            "/target/release/examples/circ",
+                        ]
+                    )
+                    row = {
+                        "benchmark": benchmark,
+                        "size": size,
+                        "selection_scheme": selection_scheme,
+                        "timestamp": timestamp,
+                        "ilp_time_assignment": "",
+                        "status": "timeout",
+                        "error": timeout_message,
+                    }
+                    writer.writerow(row)
+                    csvfile.flush()
+                    continue
+
+                if returncode != 0:
+                    row = {
+                        "benchmark": benchmark,
+                        "size": size,
+                        "selection_scheme": selection_scheme,
+                        "timestamp": timestamp,
+                        "ilp_time_assignment": "",
+                        "status": "error",
+                        "error": format_error(output, returncode),
+                    }
+                    writer.writerow(row)
+                    csvfile.flush()
+                    continue
+
+                if ilp_time is None:
+                    row = {
+                        "benchmark": benchmark,
+                        "size": size,
+                        "selection_scheme": selection_scheme,
+                        "timestamp": timestamp,
+                        "ilp_time_assignment": "",
+                        "status": "missing_ilp_time",
+                        "error": "ILP time not found in compiler output",
+                    }
+                    writer.writerow(row)
+                    csvfile.flush()
+                    continue
+
                 row = {
                     "benchmark": benchmark,
                     "size": size,
+                    "selection_scheme": selection_scheme,
                     "timestamp": timestamp,
-                    "ilp_time_seconds": "",
-                    "status": "timeout",
-                    "error": timeout_message,
+                    "ilp_time_assignment": ilp_time,
+                    "status": "ok",
+                    "error": "",
                 }
                 writer.writerow(row)
                 csvfile.flush()
-                continue
-
-            if returncode != 0:
-                row = {
-                    "benchmark": benchmark,
-                    "size": size,
-                    "timestamp": timestamp,
-                    "ilp_time_seconds": "",
-                    "status": "error",
-                    "error": format_error(output, returncode),
-                }
-                writer.writerow(row)
-                csvfile.flush()
-                continue
-
-            if ilp_time is None:
-                row = {
-                    "benchmark": benchmark,
-                    "size": size,
-                    "timestamp": timestamp,
-                    "ilp_time_seconds": "",
-                    "status": "missing_ilp_time",
-                    "error": "ILP time not found in compiler output",
-                }
-                writer.writerow(row)
-                csvfile.flush()
-                continue
-
-            row = {
-                "benchmark": benchmark,
-                "size": size,
-                "timestamp": timestamp,
-                "ilp_time_seconds": ilp_time,
-                "status": "ok",
-                "error": "",
-            }
-            writer.writerow(row)
-            csvfile.flush()
 
     print(f"Results written to {output_path}")
     print(f"Detailed log written to {log_path}")
