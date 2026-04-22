@@ -1,0 +1,32 @@
+benchmark,size,selection_scheme,timestamp,ilp_time_assignment,status,error
+biometric,1024,smart_lp,2026-04-21T19:10:34Z,16.386689,ok,
+biometric,512,smart_lp,2026-04-21T19:12:03Z,7.667176,ok,
+convex_hull,128,smart_lp,2026-04-21T19:22:37Z,,error,OUT OF MEMORY
+convex_hull,256,smart_lp,2026-04-21T19:35:37Z,,error,OUT OF MEMORY
+convex_hull,32,smart_lp,2026-04-21T19:48:48Z,79.929311,ok,
+convex_hull,64,smart_lp,2026-04-21T20:08:12Z,,timeout,TIMEOUT
+count_102,1024,smart_lp,2026-04-21T20:13:34Z,21.781527,ok,
+count_102,4096,smart_lp,2026-04-21T20:27:09Z,,error,OUT OF MEMORY
+count_10s,1024,smart_lp,2026-04-21T20:32:57Z,28.236893,ok,
+count_10s,4096,smart_lp,2026-04-21T20:50:20Z,,error,OUT OF MEMORY
+cryptonets_max_pooling,16,smart_lp,2026-04-21T20:52:15Z,0.146593,ok,
+db_join,32,smart_lp,2026-04-21T20:55:33Z,9.389306,ok,
+db_join,64,smart_lp,2026-04-21T21:00:32Z,,error,OUT OF MEMORY
+db_variance,1024,smart_lp,2026-04-21T21:02:15Z,3.780265,ok,
+db_variance,2048,smart_lp,2026-04-21T21:04:12Z,12.092727,ok,
+db_variance,4096,smart_lp,2026-04-21T21:08:02Z,23.061525,ok,
+db_variance,512,smart_lp,2026-04-21T21:08:34Z,0.769734,ok,
+inner_product,4096,smart_lp,2026-04-21T21:10:28Z,11.832059,ok,
+inner_product,512,smart_lp,2026-04-21T21:10:45Z,0.428473,ok,
+longest_102,1024,smart_lp,2026-04-21T21:17:57Z,45.329534,ok,
+longest_102,4096,smart_lp,2026-04-21T21:35:43Z,,error,OUT OF MEMORY
+max_dist_between_syms,1024,smart_lp,2026-04-21T21:38:33Z,6.005420,ok,
+max_dist_between_syms,2048,smart_lp,2026-04-21T21:40:58Z,14.910944,ok,
+minimal_points,128,smart_lp,2026-04-21T21:55:14Z,,error,OUT OF MEMORY/TIMEOUT
+minimal_points,256,smart_lp,2026-04-21T22:05:59Z,,error,OUT OF MEMORY
+minimal_points,32,smart_lp,2026-04-21T22:14:01Z,46.386018,ok,
+minimal_points,64,smart_lp,2026-04-21T22:32:50Z,,timeout,TIMEOUT
+mnist_relu,16_2048,smart_lp,2026-04-21T22:45:41Z,,error,OUT OF MEMORY
+mnist_relu,16_512,smart_lp,2026-04-21T22:48:52Z,11.199099,ok,
+psi,1024,smart_lp,2026-04-21T23:07:11Z,,timeout,TIMEOUT
+psi,128,smart_lp,2026-04-21T23:27:13Z,,timeout,TIMEOUT

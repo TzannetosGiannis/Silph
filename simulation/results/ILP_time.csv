@@ -1,0 +1,311 @@
+benchmark,size,selection_scheme,run,timestamp,ilp_time_assignment,status,error
+biometric,1024,smart_lp,1,2026-04-21T19:08:01Z,16.076182,ok,
+biometric,1024,smart_lp,2,2026-04-21T19:08:18Z,16.104891,ok,
+biometric,1024,smart_lp,3,2026-04-21T19:08:35Z,16.194347,ok,
+biometric,1024,smart_lp,4,2026-04-21T19:08:51Z,17.668359,ok,
+biometric,1024,smart_lp,5,2026-04-21T19:09:10Z,16.437374,ok,
+biometric,1024,smart_lp,6,2026-04-21T19:09:27Z,16.112486,ok,
+biometric,1024,smart_lp,7,2026-04-21T19:09:44Z,16.455160,ok,
+biometric,1024,smart_lp,8,2026-04-21T19:10:01Z,15.933227,ok,
+biometric,1024,smart_lp,9,2026-04-21T19:10:17Z,15.979158,ok,
+biometric,1024,smart_lp,10,2026-04-21T19:10:34Z,16.905709,ok,
+biometric,512,smart_lp,1,2026-04-21T19:10:52Z,8.426860,ok,
+biometric,512,smart_lp,2,2026-04-21T19:11:00Z,7.558135,ok,
+biometric,512,smart_lp,3,2026-04-21T19:11:08Z,7.607450,ok,
+biometric,512,smart_lp,4,2026-04-21T19:11:16Z,7.581984,ok,
+biometric,512,smart_lp,5,2026-04-21T19:11:24Z,7.633775,ok,
+biometric,512,smart_lp,6,2026-04-21T19:11:32Z,7.458427,ok,
+biometric,512,smart_lp,7,2026-04-21T19:11:40Z,7.528927,ok,
+biometric,512,smart_lp,8,2026-04-21T19:11:48Z,7.522667,ok,
+biometric,512,smart_lp,9,2026-04-21T19:11:55Z,7.594933,ok,
+biometric,512,smart_lp,10,2026-04-21T19:12:03Z,7.758604,ok,
+convex_hull,128,smart_lp,1,2026-04-21T19:12:11Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+convex_hull,128,smart_lp,2,2026-04-21T19:13:13Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+convex_hull,128,smart_lp,3,2026-04-21T19:14:13Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+convex_hull,128,smart_lp,4,2026-04-21T19:15:35Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+convex_hull,128,smart_lp,5,2026-04-21T19:16:41Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+convex_hull,128,smart_lp,6,2026-04-21T19:17:50Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+convex_hull,128,smart_lp,7,2026-04-21T19:18:55Z,,error,exit -9: Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1) | Total time (CPU seconds):       0.07   (Wallclock seconds):       0.03
+convex_hull,128,smart_lp,8,2026-04-21T19:20:02Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+convex_hull,128,smart_lp,9,2026-04-21T19:21:21Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+convex_hull,128,smart_lp,10,2026-04-21T19:22:37Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+convex_hull,256,smart_lp,1,2026-04-21T19:23:56Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+convex_hull,256,smart_lp,2,2026-04-21T19:25:15Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+convex_hull,256,smart_lp,3,2026-04-21T19:26:37Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+convex_hull,256,smart_lp,4,2026-04-21T19:27:53Z,,error,exit -9: Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1) | Total time (CPU seconds):       0.06   (Wallclock seconds):       0.03
+convex_hull,256,smart_lp,5,2026-04-21T19:29:08Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+convex_hull,256,smart_lp,6,2026-04-21T19:30:30Z,,error,exit -9: Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1) | Total time (CPU seconds):       0.08   (Wallclock seconds):       0.05
+convex_hull,256,smart_lp,7,2026-04-21T19:31:45Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+convex_hull,256,smart_lp,8,2026-04-21T19:33:08Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+convex_hull,256,smart_lp,9,2026-04-21T19:34:22Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+convex_hull,256,smart_lp,10,2026-04-21T19:35:37Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+convex_hull,32,smart_lp,1,2026-04-21T19:36:47Z,79.517789,ok,
+convex_hull,32,smart_lp,2,2026-04-21T19:38:07Z,76.458536,ok,
+convex_hull,32,smart_lp,3,2026-04-21T19:39:24Z,78.356715,ok,
+convex_hull,32,smart_lp,4,2026-04-21T19:40:42Z,84.462504,ok,
+convex_hull,32,smart_lp,5,2026-04-21T19:42:07Z,79.393341,ok,
+convex_hull,32,smart_lp,6,2026-04-21T19:43:27Z,80.166005,ok,
+convex_hull,32,smart_lp,7,2026-04-21T19:44:47Z,80.418614,ok,
+convex_hull,32,smart_lp,8,2026-04-21T19:46:08Z,83.161644,ok,
+convex_hull,32,smart_lp,9,2026-04-21T19:47:31Z,76.748359,ok,
+convex_hull,32,smart_lp,10,2026-04-21T19:48:48Z,80.609605,ok,
+convex_hull,64,smart_lp,1,2026-04-21T19:50:09Z,,timeout,compile exceeded 120s; killing circ processes
+convex_hull,64,smart_lp,2,2026-04-21T19:52:10Z,,timeout,compile exceeded 120s; killing circ processes
+convex_hull,64,smart_lp,3,2026-04-21T19:54:10Z,,timeout,compile exceeded 120s; killing circ processes
+convex_hull,64,smart_lp,4,2026-04-21T19:56:10Z,,timeout,compile exceeded 120s; killing circ processes
+convex_hull,64,smart_lp,5,2026-04-21T19:58:10Z,,timeout,compile exceeded 120s; killing circ processes
+convex_hull,64,smart_lp,6,2026-04-21T20:00:11Z,,timeout,compile exceeded 120s; killing circ processes
+convex_hull,64,smart_lp,7,2026-04-21T20:02:11Z,,timeout,compile exceeded 120s; killing circ processes
+convex_hull,64,smart_lp,8,2026-04-21T20:04:11Z,,timeout,compile exceeded 120s; killing circ processes
+convex_hull,64,smart_lp,9,2026-04-21T20:06:11Z,,timeout,compile exceeded 120s; killing circ processes
+convex_hull,64,smart_lp,10,2026-04-21T20:08:12Z,,timeout,compile exceeded 120s; killing circ processes
+count_102,1024,smart_lp,1,2026-04-21T20:10:12Z,21.316441,ok,
+count_102,1024,smart_lp,2,2026-04-21T20:10:34Z,23.047761,ok,
+count_102,1024,smart_lp,3,2026-04-21T20:10:58Z,21.554771,ok,
+count_102,1024,smart_lp,4,2026-04-21T20:11:20Z,21.587511,ok,
+count_102,1024,smart_lp,5,2026-04-21T20:11:42Z,21.470930,ok,
+count_102,1024,smart_lp,6,2026-04-21T20:12:04Z,22.117302,ok,
+count_102,1024,smart_lp,7,2026-04-21T20:12:27Z,22.599265,ok,
+count_102,1024,smart_lp,8,2026-04-21T20:12:50Z,21.259372,ok,
+count_102,1024,smart_lp,9,2026-04-21T20:13:12Z,21.288924,ok,
+count_102,1024,smart_lp,10,2026-04-21T20:13:34Z,21.572990,ok,
+count_102,4096,smart_lp,1,2026-04-21T20:13:56Z,,error,"exit -9: Cgl0004I processed model has 55860 rows, 39886 columns (39886 integer (39886 of which binary)) and 161796 elements | Cbc0038I Solution found of -272.213 | Cbc0038I Before mini branch and bound, 39337 integers at bound fixed and 0 continuous | Cbc0012I Integer solution of -273.77437 found by feasibility pump after 0 iterations and 0 nodes (151.91 seconds) | C"
+count_102,4096,smart_lp,2,2026-04-21T20:15:25Z,,error,"exit -9: Cbc0038I Before mini branch and bound, 39337 integers at bound fixed and 0 continuous | Cgl0004I processed model has 55860 rows, 39886 columns (39886 integer (39886 of which binary)) and 161796 elements | Cbc0038I Mini branch and bound did not improve solution (151.41 seconds) | Cbc0038I After 151.53 seconds - Feasibility pump exiting with objective of -272.637 - took 5.08 seconds | Cbc0038I"
+count_102,4096,smart_lp,3,2026-04-21T20:16:54Z,,error,"exit -9: Cbc0038I Mini branch and bound did not improve solution (152.18 seconds) | Cbc0038I After 152.18 seconds - Feasibility pump exiting with objective of -272.637 - took 3.74 seconds | Cgl0004I processed model has 55860 rows, 39886 columns (39886 integer (39886 of which binary)) and 161796 elements | Cbc0012I Integer solution of -272.63675 found by feasibility pump after 0 iterations and 0 nodes (152.55 seconds) | Cgl0004I processed mode"
+count_102,4096,smart_lp,4,2026-04-21T20:18:24Z,,error,"exit -9: Cbc0038I Initial state - 0 integers unsatisfied sum - 0 | Cgl0004I processed model has 55948 rows, 39941 columns (39941 integer (39941 of which binary)) and 162049 elements | Cgl0004I processed model has 56728 rows, 39548 columns (39548 integer (39548 of which binary)) and 164450 elements | Continuous objective value is -290.962 - 151.57 seconds | Cbc0038I Initial state - 0 integers unsatisfied"
+count_102,4096,smart_lp,5,2026-04-21T20:19:51Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+count_102,4096,smart_lp,6,2026-04-21T20:21:17Z,,error,"exit -9: Continuous objective value is -290.962 - 148.21 seconds | Cbc0012I Integer solution of -272.2135 found by feasibility pump after 0 iterations and 0 nodes (149.13 seconds) | Continuous objective value is -288.309 - 146.80 seconds | Cbc0001I Search completed - best objective -276.7234847729136, took 0 iterations and 0 nodes (148.98 seconds) | Cbc0035I Ma"
+count_102,4096,smart_lp,7,2026-04-21T20:22:45Z,,error,"exit -9: Cgl0004I processed model has 56728 rows, 39548 columns (39548 integer (39548 of which binary)) and 164450 elements | Cgl0004I processed model has 55213 rows, 40398 columns (40398 integer (40398 of which binary)) and 159782 elements | Cbc0038I Before mini branch and bound, 39337 integers at bound fixed and 0 continuous | Cbc0012I Integer solution of -273.77437 found by feasibility pump after 0 iterations and 0 nodes (149.69 seconds) | Cbc0038I Mini branch and bound did n"
+count_102,4096,smart_lp,8,2026-04-21T20:24:14Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+count_102,4096,smart_lp,9,2026-04-21T20:25:41Z,,error,"exit -9: Cbc0038I Initial state - 0 integers unsatisfied sum - 0 | Cgl0004I processed model has 55948 rows, 39941 columns (39941 integer (39941 of which binary)) and 162049 elements | Cbc0038I Solution found of -272.213 | Cgl0004I processed model has 55860 rows, 39886 columns (39886 integer (39886 of which binary)) and 161796 elements | Cgl0004I"
+count_102,4096,smart_lp,10,2026-04-21T20:27:09Z,,error,exit -9: Cbc0038I Solution found of -273.774 | Cbc0038I Mini branch and bound did not improve solution (151.11 seconds) | Cbc0038I After 151.11 seconds - Feasibility pump exiting with objective of -276.723 - took 4.82 seconds | Cbc0038I Solution found of -276.01 | Cbc0012I Integer solution of -276.72348 found by feasibility pump
+count_10s,1024,smart_lp,1,2026-04-21T20:28:35Z,29.229355,ok,
+count_10s,1024,smart_lp,2,2026-04-21T20:29:06Z,26.539017,ok,
+count_10s,1024,smart_lp,3,2026-04-21T20:29:33Z,27.802928,ok,
+count_10s,1024,smart_lp,4,2026-04-21T20:30:02Z,28.710587,ok,
+count_10s,1024,smart_lp,5,2026-04-21T20:30:31Z,29.031087,ok,
+count_10s,1024,smart_lp,6,2026-04-21T20:31:01Z,28.500250,ok,
+count_10s,1024,smart_lp,7,2026-04-21T20:31:30Z,28.674105,ok,
+count_10s,1024,smart_lp,8,2026-04-21T20:32:00Z,27.634971,ok,
+count_10s,1024,smart_lp,9,2026-04-21T20:32:28Z,27.976899,ok,
+count_10s,1024,smart_lp,10,2026-04-21T20:32:57Z,28.269734,ok,
+count_10s,4096,smart_lp,1,2026-04-21T20:33:26Z,,error,exit -9: Continuous objective value is -221.493 - 0.54 seconds | Continuous objective value is -206.971 - 172.76 seconds | Result - Optimal solution found | Objective value:                -225.22850000 | Enumerated nodes:
+count_10s,4096,smart_lp,2,2026-04-21T20:35:14Z,,error,"exit -9: Time (Wallclock seconds):       4.74 | Total time (CPU seconds):       186.85   (Wallclock seconds):       105.25 | Continuous objective value is -209.734 - 185.27 seconds | Continuous objective value is -208.897 - 182.15 seconds | Cgl0004I processed model has 51051 rows, 35887 columns (35887 integer (35887 of which binary)) and 146421 elements"
+count_10s,4096,smart_lp,3,2026-04-21T20:37:13Z,,error,exit -9: Enumerated nodes:               0 | Total iterations:               0 | Time (CPU seconds):             10.29 | Time (Wallclock seconds):       5.40 | Total time (CPU seconds):       178.37   (Wallclock seconds):       94.15
+count_10s,4096,smart_lp,4,2026-04-21T20:39:03Z,,error,exit -9: Enumerated nodes:               0 | Total iterations:               0 | Time (CPU seconds):             9.29 | Time (Wallclock seconds):       4.89 | Total time (CPU seconds):       179.69   (Wallclock seconds):       94.44
+count_10s,4096,smart_lp,5,2026-04-21T20:40:56Z,,error,exit -9: Total iterations:               0 | Time (CPU seconds):             10.73 | Time (Wallclock seconds):       6.03 | Total time (CPU seconds):       174.19   (Wallclock seconds):       91.29 | Continuous objective value is -208.059 - 173.88 seconds
+count_10s,4096,smart_lp,6,2026-04-21T20:42:52Z,,error,exit -9: Time (Wallclock seconds):       5.03 | Total time (CPU seconds):       179.70   (Wallclock seconds):       93.89 | Continuous objective value is -217.376 - 184.33 seconds | Continuous objective value is -212.509 - 180.22 seconds | Continuous objective value is -208.803 - 183.12 seconds
+count_10s,4096,smart_lp,7,2026-04-21T20:44:41Z,,error,exit -9: Total iterations:               0 | Time (CPU seconds):             10.61 | Time (Wallclock seconds):       5.59 | Total time (CPU seconds):       176.55   (Wallclock seconds):       91.44 | Continuous objective value is -216.645 - 182.27 seconds
+count_10s,4096,smart_lp,8,2026-04-21T20:46:33Z,,error,exit -9: Total time (CPU seconds):       181.54   (Wallclock seconds):       94.74 | Continuous objective value is -210.289 - 180.79 seconds | Cbc0038I Solution found of -205.658 | Continuous objective value is -207.356 - 182.94 seconds | Continuous objective value is -214.985 - 182.64 seconds
+count_10s,4096,smart_lp,9,2026-04-21T20:48:31Z,,error,"exit -9: Time (CPU seconds):             10.19 | Time (Wallclock seconds):       5.63 | Total time (CPU seconds):       183.99   (Wallclock seconds):       95.51 | Continuous objective value is -208.998 - 181.91 seconds | Cgl0004I processed model has 51933 rows, 36513 columns (36513 integer (36513 of which binary)) and 148961 elements"
+count_10s,4096,smart_lp,10,2026-04-21T20:50:20Z,,error,exit -9: Result - Optimal solution found | Objective value:                -224.76365000 | Enumerated nodes:               0 | Total iterations:               0 | Time (CPU seconds):
+cryptonets_max_pooling,16,smart_lp,1,2026-04-21T20:52:12Z,0.156469,ok,
+cryptonets_max_pooling,16,smart_lp,2,2026-04-21T20:52:13Z,0.128378,ok,
+cryptonets_max_pooling,16,smart_lp,3,2026-04-21T20:52:13Z,0.129445,ok,
+cryptonets_max_pooling,16,smart_lp,4,2026-04-21T20:52:13Z,0.184097,ok,
+cryptonets_max_pooling,16,smart_lp,5,2026-04-21T20:52:14Z,0.179033,ok,
+cryptonets_max_pooling,16,smart_lp,6,2026-04-21T20:52:14Z,0.179099,ok,
+cryptonets_max_pooling,16,smart_lp,7,2026-04-21T20:52:14Z,0.128919,ok,
+cryptonets_max_pooling,16,smart_lp,8,2026-04-21T20:52:14Z,0.128274,ok,
+cryptonets_max_pooling,16,smart_lp,9,2026-04-21T20:52:14Z,0.124431,ok,
+cryptonets_max_pooling,16,smart_lp,10,2026-04-21T20:52:15Z,0.127786,ok,
+db_join,32,smart_lp,1,2026-04-21T20:52:15Z,10.143995,ok,
+db_join,32,smart_lp,2,2026-04-21T20:52:38Z,9.329668,ok,
+db_join,32,smart_lp,3,2026-04-21T20:52:59Z,9.274385,ok,
+db_join,32,smart_lp,4,2026-04-21T20:53:21Z,9.210627,ok,
+db_join,32,smart_lp,5,2026-04-21T20:53:42Z,9.222400,ok,
+db_join,32,smart_lp,6,2026-04-21T20:54:06Z,9.429587,ok,
+db_join,32,smart_lp,7,2026-04-21T20:54:28Z,9.336168,ok,
+db_join,32,smart_lp,8,2026-04-21T20:54:50Z,9.213932,ok,
+db_join,32,smart_lp,9,2026-04-21T20:55:11Z,9.192479,ok,
+db_join,32,smart_lp,10,2026-04-21T20:55:33Z,9.539816,ok,
+db_join,64,smart_lp,1,2026-04-21T20:55:55Z,,error,"exit -9: Options { path: ""/root/giannis/benchmarks/db_join/64/db_join.c"", frontend: FrontendOptions { language: Auto, value_threshold: None }, parties: 2, backend: Mpc { cost_model: ""empirical"", selection_scheme: ""smart_lp"", part_size: 8000, mut_level: 2, mut_step_size: 1, graph_type: 0, imbalance: 3 } }"
+db_join,64,smart_lp,2,2026-04-21T20:56:40Z,,error,"exit -9: Options { path: ""/root/giannis/benchmarks/db_join/64/db_join.c"", frontend: FrontendOptions { language: Auto, value_threshold: None }, parties: 2, backend: Mpc { cost_model: ""empirical"", selection_scheme: ""smart_lp"", part_size: 8000, mut_level: 2, mut_step_size: 1, graph_type: 0, imbalance: 3 } }"
+db_join,64,smart_lp,3,2026-04-21T20:56:57Z,,error,"exit -9: Options { path: ""/root/giannis/benchmarks/db_join/64/db_join.c"", frontend: FrontendOptions { language: Auto, value_threshold: None }, parties: 2, backend: Mpc { cost_model: ""empirical"", selection_scheme: ""smart_lp"", part_size: 8000, mut_level: 2, mut_step_size: 1, graph_type: 0, imbalance: 3 } }"
+db_join,64,smart_lp,4,2026-04-21T20:57:18Z,,error,"exit -9: Options { path: ""/root/giannis/benchmarks/db_join/64/db_join.c"", frontend: FrontendOptions { language: Auto, value_threshold: None }, parties: 2, backend: Mpc { cost_model: ""empirical"", selection_scheme: ""smart_lp"", part_size: 8000, mut_level: 2, mut_step_size: 1, graph_type: 0, imbalance: 3 } }"
+db_join,64,smart_lp,5,2026-04-21T20:57:25Z,,error,"exit -9: Options { path: ""/root/giannis/benchmarks/db_join/64/db_join.c"", frontend: FrontendOptions { language: Auto, value_threshold: None }, parties: 2, backend: Mpc { cost_model: ""empirical"", selection_scheme: ""smart_lp"", part_size: 8000, mut_level: 2, mut_step_size: 1, graph_type: 0, imbalance: 3 } }"
+db_join,64,smart_lp,6,2026-04-21T20:58:35Z,,error,"exit -9: Options { path: ""/root/giannis/benchmarks/db_join/64/db_join.c"", frontend: FrontendOptions { language: Auto, value_threshold: None }, parties: 2, backend: Mpc { cost_model: ""empirical"", selection_scheme: ""smart_lp"", part_size: 8000, mut_level: 2, mut_step_size: 1, graph_type: 0, imbalance: 3 } }"
+db_join,64,smart_lp,7,2026-04-21T20:58:42Z,,error,"exit -9: Options { path: ""/root/giannis/benchmarks/db_join/64/db_join.c"", frontend: FrontendOptions { language: Auto, value_threshold: None }, parties: 2, backend: Mpc { cost_model: ""empirical"", selection_scheme: ""smart_lp"", part_size: 8000, mut_level: 2, mut_step_size: 1, graph_type: 0, imbalance: 3 } }"
+db_join,64,smart_lp,8,2026-04-21T20:59:05Z,,error,"exit -9: Options { path: ""/root/giannis/benchmarks/db_join/64/db_join.c"", frontend: FrontendOptions { language: Auto, value_threshold: None }, parties: 2, backend: Mpc { cost_model: ""empirical"", selection_scheme: ""smart_lp"", part_size: 8000, mut_level: 2, mut_step_size: 1, graph_type: 0, imbalance: 3 } }"
+db_join,64,smart_lp,9,2026-04-21T21:00:17Z,,error,"exit -9: Options { path: ""/root/giannis/benchmarks/db_join/64/db_join.c"", frontend: FrontendOptions { language: Auto, value_threshold: None }, parties: 2, backend: Mpc { cost_model: ""empirical"", selection_scheme: ""smart_lp"", part_size: 8000, mut_level: 2, mut_step_size: 1, graph_type: 0, imbalance: 3 } }"
+db_join,64,smart_lp,10,2026-04-21T21:00:32Z,,error,"exit -9: Options { path: ""/root/giannis/benchmarks/db_join/64/db_join.c"", frontend: FrontendOptions { language: Auto, value_threshold: None }, parties: 2, backend: Mpc { cost_model: ""empirical"", selection_scheme: ""smart_lp"", part_size: 8000, mut_level: 2, mut_step_size: 1, graph_type: 0, imbalance: 3 } }"
+db_variance,1024,smart_lp,1,2026-04-21T21:01:39Z,4.022966,ok,
+db_variance,1024,smart_lp,2,2026-04-21T21:01:43Z,3.710233,ok,
+db_variance,1024,smart_lp,3,2026-04-21T21:01:47Z,3.771815,ok,
+db_variance,1024,smart_lp,4,2026-04-21T21:01:51Z,3.770235,ok,
+db_variance,1024,smart_lp,5,2026-04-21T21:01:55Z,3.741846,ok,
+db_variance,1024,smart_lp,6,2026-04-21T21:01:59Z,3.746497,ok,
+db_variance,1024,smart_lp,7,2026-04-21T21:02:03Z,3.753451,ok,
+db_variance,1024,smart_lp,8,2026-04-21T21:02:07Z,3.739774,ok,
+db_variance,1024,smart_lp,9,2026-04-21T21:02:11Z,3.750080,ok,
+db_variance,1024,smart_lp,10,2026-04-21T21:02:15Z,3.795749,ok,
+db_variance,2048,smart_lp,1,2026-04-21T21:02:19Z,12.068116,ok,
+db_variance,2048,smart_lp,2,2026-04-21T21:02:31Z,11.885328,ok,
+db_variance,2048,smart_lp,3,2026-04-21T21:02:44Z,11.832345,ok,
+db_variance,2048,smart_lp,4,2026-04-21T21:02:56Z,13.065305,ok,
+db_variance,2048,smart_lp,5,2026-04-21T21:03:10Z,12.691312,ok,
+db_variance,2048,smart_lp,6,2026-04-21T21:03:23Z,11.806589,ok,
+db_variance,2048,smart_lp,7,2026-04-21T21:03:35Z,11.926461,ok,
+db_variance,2048,smart_lp,8,2026-04-21T21:03:47Z,11.850989,ok,
+db_variance,2048,smart_lp,9,2026-04-21T21:04:00Z,11.882109,ok,
+db_variance,2048,smart_lp,10,2026-04-21T21:04:12Z,11.918717,ok,
+db_variance,4096,smart_lp,1,2026-04-21T21:04:24Z,22.846726,ok,
+db_variance,4096,smart_lp,2,2026-04-21T21:04:48Z,23.921767,ok,
+db_variance,4096,smart_lp,3,2026-04-21T21:05:14Z,22.641660,ok,
+db_variance,4096,smart_lp,4,2026-04-21T21:05:37Z,22.559473,ok,
+db_variance,4096,smart_lp,5,2026-04-21T21:06:01Z,22.986332,ok,
+db_variance,4096,smart_lp,6,2026-04-21T21:06:25Z,23.855035,ok,
+db_variance,4096,smart_lp,7,2026-04-21T21:06:50Z,22.917138,ok,
+db_variance,4096,smart_lp,8,2026-04-21T21:07:14Z,23.166308,ok,
+db_variance,4096,smart_lp,9,2026-04-21T21:07:38Z,22.927394,ok,
+db_variance,4096,smart_lp,10,2026-04-21T21:08:02Z,22.793420,ok,
+db_variance,512,smart_lp,1,2026-04-21T21:08:26Z,0.741470,ok,
+db_variance,512,smart_lp,2,2026-04-21T21:08:27Z,0.718647,ok,
+db_variance,512,smart_lp,3,2026-04-21T21:08:28Z,0.967375,ok,
+db_variance,512,smart_lp,4,2026-04-21T21:08:29Z,0.710002,ok,
+db_variance,512,smart_lp,5,2026-04-21T21:08:30Z,0.736647,ok,
+db_variance,512,smart_lp,6,2026-04-21T21:08:31Z,0.870242,ok,
+db_variance,512,smart_lp,7,2026-04-21T21:08:32Z,0.786228,ok,
+db_variance,512,smart_lp,8,2026-04-21T21:08:33Z,0.725519,ok,
+db_variance,512,smart_lp,9,2026-04-21T21:08:34Z,0.718062,ok,
+db_variance,512,smart_lp,10,2026-04-21T21:08:34Z,0.723144,ok,
+inner_product,4096,smart_lp,1,2026-04-21T21:08:35Z,12.412778,ok,
+inner_product,4096,smart_lp,2,2026-04-21T21:08:48Z,11.572848,ok,
+inner_product,4096,smart_lp,3,2026-04-21T21:09:01Z,11.511457,ok,
+inner_product,4096,smart_lp,4,2026-04-21T21:09:13Z,11.573325,ok,
+inner_product,4096,smart_lp,5,2026-04-21T21:09:25Z,11.506698,ok,
+inner_product,4096,smart_lp,6,2026-04-21T21:09:37Z,11.860897,ok,
+inner_product,4096,smart_lp,7,2026-04-21T21:09:50Z,11.521696,ok,
+inner_product,4096,smart_lp,8,2026-04-21T21:10:02Z,11.947895,ok,
+inner_product,4096,smart_lp,9,2026-04-21T21:10:15Z,12.302042,ok,
+inner_product,4096,smart_lp,10,2026-04-21T21:10:28Z,12.110959,ok,
+inner_product,512,smart_lp,1,2026-04-21T21:10:41Z,0.427420,ok,
+inner_product,512,smart_lp,2,2026-04-21T21:10:41Z,0.429179,ok,
+inner_product,512,smart_lp,3,2026-04-21T21:10:42Z,0.420380,ok,
+inner_product,512,smart_lp,4,2026-04-21T21:10:42Z,0.431993,ok,
+inner_product,512,smart_lp,5,2026-04-21T21:10:43Z,0.427508,ok,
+inner_product,512,smart_lp,6,2026-04-21T21:10:43Z,0.427060,ok,
+inner_product,512,smart_lp,7,2026-04-21T21:10:44Z,0.442101,ok,
+inner_product,512,smart_lp,8,2026-04-21T21:10:44Z,0.419668,ok,
+inner_product,512,smart_lp,9,2026-04-21T21:10:45Z,0.427712,ok,
+inner_product,512,smart_lp,10,2026-04-21T21:10:45Z,0.431714,ok,
+longest_102,1024,smart_lp,1,2026-04-21T21:10:46Z,43.451960,ok,
+longest_102,1024,smart_lp,2,2026-04-21T21:11:30Z,51.721751,ok,
+longest_102,1024,smart_lp,3,2026-04-21T21:12:23Z,50.400921,ok,
+longest_102,1024,smart_lp,4,2026-04-21T21:13:14Z,60.232562,ok,
+longest_102,1024,smart_lp,5,2026-04-21T21:14:15Z,31.303156,ok,
+longest_102,1024,smart_lp,6,2026-04-21T21:14:48Z,30.928905,ok,
+longest_102,1024,smart_lp,7,2026-04-21T21:15:20Z,66.584576,ok,
+longest_102,1024,smart_lp,8,2026-04-21T21:16:27Z,54.462049,ok,
+longest_102,1024,smart_lp,9,2026-04-21T21:17:23Z,33.006013,ok,
+longest_102,1024,smart_lp,10,2026-04-21T21:17:57Z,31.203442,ok,
+longest_102,4096,smart_lp,1,2026-04-21T21:18:29Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+longest_102,4096,smart_lp,2,2026-04-21T21:20:24Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+longest_102,4096,smart_lp,3,2026-04-21T21:22:19Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+longest_102,4096,smart_lp,4,2026-04-21T21:24:11Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+longest_102,4096,smart_lp,5,2026-04-21T21:26:07Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+longest_102,4096,smart_lp,6,2026-04-21T21:28:03Z,,error,exit -9: Enumerated nodes:               0 | Total iterations:               0 | Time (CPU seconds):             108.47 | Time (Wallclock seconds):       56.80 | Total time (CPU seconds):       108.53   (Wallclock seconds):       56.80
+longest_102,4096,smart_lp,7,2026-04-21T21:29:56Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+longest_102,4096,smart_lp,8,2026-04-21T21:31:50Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+longest_102,4096,smart_lp,9,2026-04-21T21:33:48Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+longest_102,4096,smart_lp,10,2026-04-21T21:35:43Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+max_dist_between_syms,1024,smart_lp,1,2026-04-21T21:37:37Z,6.560831,ok,
+max_dist_between_syms,1024,smart_lp,2,2026-04-21T21:37:44Z,5.886572,ok,
+max_dist_between_syms,1024,smart_lp,3,2026-04-21T21:37:50Z,5.960071,ok,
+max_dist_between_syms,1024,smart_lp,4,2026-04-21T21:37:56Z,5.937516,ok,
+max_dist_between_syms,1024,smart_lp,5,2026-04-21T21:38:02Z,5.949004,ok,
+max_dist_between_syms,1024,smart_lp,6,2026-04-21T21:38:08Z,5.927523,ok,
+max_dist_between_syms,1024,smart_lp,7,2026-04-21T21:38:14Z,5.985761,ok,
+max_dist_between_syms,1024,smart_lp,8,2026-04-21T21:38:21Z,5.944292,ok,
+max_dist_between_syms,1024,smart_lp,9,2026-04-21T21:38:27Z,5.917526,ok,
+max_dist_between_syms,1024,smart_lp,10,2026-04-21T21:38:33Z,5.985100,ok,
+max_dist_between_syms,2048,smart_lp,1,2026-04-21T21:38:39Z,14.661904,ok,
+max_dist_between_syms,2048,smart_lp,2,2026-04-21T21:38:54Z,14.774222,ok,
+max_dist_between_syms,2048,smart_lp,3,2026-04-21T21:39:10Z,15.730867,ok,
+max_dist_between_syms,2048,smart_lp,4,2026-04-21T21:39:26Z,14.954938,ok,
+max_dist_between_syms,2048,smart_lp,5,2026-04-21T21:39:41Z,15.125806,ok,
+max_dist_between_syms,2048,smart_lp,6,2026-04-21T21:39:57Z,14.622115,ok,
+max_dist_between_syms,2048,smart_lp,7,2026-04-21T21:40:12Z,14.528463,ok,
+max_dist_between_syms,2048,smart_lp,8,2026-04-21T21:40:27Z,14.628912,ok,
+max_dist_between_syms,2048,smart_lp,9,2026-04-21T21:40:42Z,14.689122,ok,
+max_dist_between_syms,2048,smart_lp,10,2026-04-21T21:40:58Z,15.393095,ok,
+minimal_points,128,smart_lp,1,2026-04-21T21:41:14Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,128,smart_lp,2,2026-04-21T21:42:40Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,128,smart_lp,3,2026-04-21T21:44:11Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,128,smart_lp,4,2026-04-21T21:45:42Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,128,smart_lp,5,2026-04-21T21:47:09Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,128,smart_lp,6,2026-04-21T21:48:25Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,128,smart_lp,7,2026-04-21T21:49:52Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,128,smart_lp,8,2026-04-21T21:51:47Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,128,smart_lp,9,2026-04-21T21:53:13Z,,timeout,compile exceeded 120s; killing circ processes
+minimal_points,128,smart_lp,10,2026-04-21T21:55:14Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,256,smart_lp,1,2026-04-21T21:56:33Z,,error,exit -9: Coin:Total time (CPU seconds):       0.10   (Wallclock seconds):       0.08 | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,256,smart_lp,2,2026-04-21T21:57:37Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,256,smart_lp,3,2026-04-21T21:58:39Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,256,smart_lp,4,2026-04-21T21:59:43Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,256,smart_lp,5,2026-04-21T22:00:46Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,256,smart_lp,6,2026-04-21T22:01:49Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,256,smart_lp,7,2026-04-21T22:02:51Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,256,smart_lp,8,2026-04-21T22:03:53Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,256,smart_lp,9,2026-04-21T22:04:55Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,256,smart_lp,10,2026-04-21T22:05:59Z,,error,exit -9: command line - Cbc_C_Interface -solve -quit (default strategy 1) | Welcome to the CBC MILP Solver | Version: 2.10.11 | Build Date: Jan 21 2024 | command line - Cbc_C_Interface -solve -quit (default strategy 1)
+minimal_points,32,smart_lp,1,2026-04-21T22:07:01Z,46.276501,ok,
+minimal_points,32,smart_lp,2,2026-04-21T22:07:48Z,46.092310,ok,
+minimal_points,32,smart_lp,3,2026-04-21T22:08:34Z,46.934814,ok,
+minimal_points,32,smart_lp,4,2026-04-21T22:09:22Z,46.243442,ok,
+minimal_points,32,smart_lp,5,2026-04-21T22:10:08Z,46.337756,ok,
+minimal_points,32,smart_lp,6,2026-04-21T22:10:55Z,46.230700,ok,
+minimal_points,32,smart_lp,7,2026-04-21T22:11:41Z,46.031875,ok,
+minimal_points,32,smart_lp,8,2026-04-21T22:12:27Z,46.537589,ok,
+minimal_points,32,smart_lp,9,2026-04-21T22:13:14Z,46.796788,ok,
+minimal_points,32,smart_lp,10,2026-04-21T22:14:01Z,46.378409,ok,
+minimal_points,64,smart_lp,1,2026-04-21T22:14:48Z,,timeout,compile exceeded 120s; killing circ processes
+minimal_points,64,smart_lp,2,2026-04-21T22:16:48Z,,timeout,compile exceeded 120s; killing circ processes
+minimal_points,64,smart_lp,3,2026-04-21T22:18:48Z,,timeout,compile exceeded 120s; killing circ processes
+minimal_points,64,smart_lp,4,2026-04-21T22:20:49Z,,timeout,compile exceeded 120s; killing circ processes
+minimal_points,64,smart_lp,5,2026-04-21T22:22:49Z,,timeout,compile exceeded 120s; killing circ processes
+minimal_points,64,smart_lp,6,2026-04-21T22:24:49Z,,timeout,compile exceeded 120s; killing circ processes
+minimal_points,64,smart_lp,7,2026-04-21T22:26:49Z,,timeout,compile exceeded 120s; killing circ processes
+minimal_points,64,smart_lp,8,2026-04-21T22:28:49Z,,timeout,compile exceeded 120s; killing circ processes
+minimal_points,64,smart_lp,9,2026-04-21T22:30:50Z,,timeout,compile exceeded 120s; killing circ processes
+minimal_points,64,smart_lp,10,2026-04-21T22:32:50Z,,timeout,compile exceeded 120s; killing circ processes
+mnist_relu,16_2048,smart_lp,1,2026-04-21T22:34:50Z,,error,"exit -9: num_calls: 1 | k_map: {""b"": 3.0517578125e-5, ""a"": 1.0} | Calculate cost: 2222.3449800019134 | LOG: Assignment time: 55.324063795s | starting: main, 229377"
+mnist_relu,16_2048,smart_lp,2,2026-04-21T22:36:12Z,,error,"exit -9: num_calls: 1 | k_map: {""b"": 3.0517578125e-5, ""a"": 1.0} | Calculate cost: 2222.3449800019134 | LOG: Assignment time: 54.552941906s | starting: main, 229377"
+mnist_relu,16_2048,smart_lp,3,2026-04-21T22:37:24Z,,error,"exit -9: num_calls: 1 | k_map: {""b"": 3.0517578125e-5, ""a"": 1.0} | Calculate cost: 2222.3449800019134 | LOG: Assignment time: 54.526275412s | starting: main, 229377"
+mnist_relu,16_2048,smart_lp,4,2026-04-21T22:38:32Z,,error,"exit -9: num_calls: 1 | k_map: {""b"": 3.0517578125e-5, ""a"": 1.0} | Calculate cost: 2222.3449800019134 | LOG: Assignment time: 55.166546536s | starting: main, 229377"
+mnist_relu,16_2048,smart_lp,5,2026-04-21T22:39:41Z,,error,"exit -9: num_calls: 1 | k_map: {""b"": 3.0517578125e-5, ""a"": 1.0} | Calculate cost: 2222.3449800019134 | LOG: Assignment time: 54.933128142s | starting: main, 229377"
+mnist_relu,16_2048,smart_lp,6,2026-04-21T22:40:51Z,,error,"exit -9: num_calls: 1 | k_map: {""b"": 3.0517578125e-5, ""a"": 1.0} | Calculate cost: 2222.3449800019134 | LOG: Assignment time: 55.157931043s | starting: main, 229377"
+mnist_relu,16_2048,smart_lp,7,2026-04-21T22:41:59Z,,error,"exit -9: num_calls: 1 | k_map: {""b"": 3.0517578125e-5, ""a"": 1.0} | Calculate cost: 2222.3449800019134 | LOG: Assignment time: 55.276170072s | starting: main, 229377"
+mnist_relu,16_2048,smart_lp,8,2026-04-21T22:43:09Z,,error,"exit -9: num_calls: 1 | k_map: {""b"": 3.0517578125e-5, ""a"": 1.0} | Calculate cost: 2222.3449800019134 | LOG: Assignment time: 55.068507565s | starting: main, 229377"
+mnist_relu,16_2048,smart_lp,9,2026-04-21T22:44:24Z,,error,"exit -9: num_calls: 1 | k_map: {""b"": 3.0517578125e-5, ""a"": 1.0} | Calculate cost: 2222.3449800019134 | LOG: Assignment time: 55.44194725s | starting: main, 229377"
+mnist_relu,16_2048,smart_lp,10,2026-04-21T22:45:41Z,,error,"exit -9: num_calls: 1 | k_map: {""b"": 3.0517578125e-5, ""a"": 1.0} | Calculate cost: 2222.3449800019134 | LOG: Assignment time: 55.150173571s | starting: main, 229377"
+mnist_relu,16_512,smart_lp,1,2026-04-21T22:46:53Z,11.143175,ok,
+mnist_relu,16_512,smart_lp,2,2026-04-21T22:47:06Z,11.207991,ok,
+mnist_relu,16_512,smart_lp,3,2026-04-21T22:47:20Z,11.247699,ok,
+mnist_relu,16_512,smart_lp,4,2026-04-21T22:47:33Z,11.232958,ok,
+mnist_relu,16_512,smart_lp,5,2026-04-21T22:47:46Z,11.285957,ok,
+mnist_relu,16_512,smart_lp,6,2026-04-21T22:48:00Z,11.200561,ok,
+mnist_relu,16_512,smart_lp,7,2026-04-21T22:48:13Z,11.091652,ok,
+mnist_relu,16_512,smart_lp,8,2026-04-21T22:48:26Z,11.154334,ok,
+mnist_relu,16_512,smart_lp,9,2026-04-21T22:48:39Z,11.207608,ok,
+mnist_relu,16_512,smart_lp,10,2026-04-21T22:48:52Z,11.219054,ok,
+psi,1024,smart_lp,1,2026-04-21T22:49:06Z,,timeout,compile exceeded 120s; killing circ processes
+psi,1024,smart_lp,2,2026-04-21T22:51:06Z,,timeout,compile exceeded 120s; killing circ processes
+psi,1024,smart_lp,3,2026-04-21T22:53:07Z,,timeout,compile exceeded 120s; killing circ processes
+psi,1024,smart_lp,4,2026-04-21T22:55:07Z,,timeout,compile exceeded 120s; killing circ processes
+psi,1024,smart_lp,5,2026-04-21T22:57:08Z,,timeout,compile exceeded 120s; killing circ processes
+psi,1024,smart_lp,6,2026-04-21T22:59:09Z,,timeout,compile exceeded 120s; killing circ processes
+psi,1024,smart_lp,7,2026-04-21T23:01:09Z,,timeout,compile exceeded 120s; killing circ processes
+psi,1024,smart_lp,8,2026-04-21T23:03:10Z,,timeout,compile exceeded 120s; killing circ processes
+psi,1024,smart_lp,9,2026-04-21T23:05:10Z,,timeout,compile exceeded 120s; killing circ processes
+psi,1024,smart_lp,10,2026-04-21T23:07:11Z,,timeout,compile exceeded 120s; killing circ processes
+psi,128,smart_lp,1,2026-04-21T23:09:11Z,,timeout,compile exceeded 120s; killing circ processes
+psi,128,smart_lp,2,2026-04-21T23:11:12Z,,timeout,compile exceeded 120s; killing circ processes
+psi,128,smart_lp,3,2026-04-21T23:13:12Z,,timeout,compile exceeded 120s; killing circ processes
+psi,128,smart_lp,4,2026-04-21T23:15:12Z,,timeout,compile exceeded 120s; killing circ processes
+psi,128,smart_lp,5,2026-04-21T23:17:12Z,,timeout,compile exceeded 120s; killing circ processes
+psi,128,smart_lp,6,2026-04-21T23:19:12Z,,timeout,compile exceeded 120s; killing circ processes
+psi,128,smart_lp,7,2026-04-21T23:21:12Z,,timeout,compile exceeded 120s; killing circ processes
+psi,128,smart_lp,8,2026-04-21T23:23:13Z,,timeout,compile exceeded 120s; killing circ processes
+psi,128,smart_lp,9,2026-04-21T23:25:13Z,,timeout,compile exceeded 120s; killing circ processes
+psi,128,smart_lp,10,2026-04-21T23:27:13Z,,timeout,compile exceeded 120s; killing circ processes
